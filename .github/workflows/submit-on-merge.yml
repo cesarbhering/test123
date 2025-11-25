@@ -1,0 +1,157 @@
+name: Submit Work on Merge to Main
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+      
+      - name: Configure Git for private deps
+        run: |
+          git config --global url."https://${LB_GITHUB_TOKEN}@github.com/Labelbox/".insteadOf "https://github.com/Labelbox/"
+          git config --global url."https://${ALNR_GITHUB_TOKEN}@github.com/Alignerr-Code-Labeling/".insteadOf "https://github.com/Alignerr-Code-Labeling/"
+        env:
+          LB_GITHUB_TOKEN: ${{ secrets.LB_GITHUB_TOKEN }}
+          ALNR_GITHUB_TOKEN: ${{ secrets.ALNR_GITHUB_TOKEN }}
+
+      - name: Setup Python virtual environment
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+          echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+          
+      - name: Install alignerr CLI and plugin
+        run: |
+          uv pip install libs/lb_agentic_benchmarks-*.whl
+          uv pip install -e .
+
+      - name: Submit work and get results
+        env:
+          ALIGNERR_BEARER_TOKEN: ${{ secrets.ALIGNERR_BEARER_TOKEN }}
+        run: |
+          alignerr switch task-5d29b517-7ed4-44d1-8262-b7244912d119
+          alignerr submit-work --wait task-5d29b517-7ed4-44d1-8262-b7244912d119 --no-validate
+          
+      - name: Upload evaluation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-results
+          path: results/
+          retention-days: 30
+          
+      - name: Upload validation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-reports
+          path: results/*/validation-results/results/**/index.html
+          retention-days: 30
+          if-no-files-found: warn
+          
+      - name: Prepare GitHub Pages content
+        if: always()
+        run: |
+          mkdir -p _site
+          
+          echo "=== Searching for evaluation results ==="
+          find results/ -name "index.html" -type f 2>/dev/null | head -10
+          
+          if [ -d "results" ] && [ "$(ls -A results 2>/dev/null)" ]; then
+            INDEX_FOUND=false
+            
+            # Look for the webarena-multi-001 directory with aggregated results
+            MULTI_DIR=$(find results/*/validation-results/results/ -type d -name "webarena-*" | head -1)
+            
+            if [ -n "$MULTI_DIR" ] && [ -f "$MULTI_DIR/index.html" ]; then
+              echo "✓ Found aggregated results at: $MULTI_DIR"
+              echo "Copying entire webarena-multi directory to _site/"
+              cp -R "$MULTI_DIR"/* "_site/" 2>/dev/null || true
+              INDEX_FOUND=true
+              
+              # Verify structure
+              echo "Verifying copied structure:"
+              ls -la "_site/" | head -10
+              echo "Agent directories:"
+              ls -d "_site"/*/ 2>/dev/null | head -5
+            fi
+            
+            # Fallback: look for any validation-results directory
+            if [ "$INDEX_FOUND" = false ]; then
+              VAL_RESULTS=$(find results/*/validation-results/results -type d | head -1)
+              if [ -n "$VAL_RESULTS" ] && [ -d "$VAL_RESULTS" ]; then
+                echo "Using validation results from: $VAL_RESULTS"
+                cp -R "$VAL_RESULTS"/* "_site/" 2>/dev/null || true
+                
+                # Find and promote index.html to root
+                FOUND_INDEX=$(find "_site" -name "index.html" -type f | head -1)
+                if [ -n "$FOUND_INDEX" ] && [ "$FOUND_INDEX" != "_site/index.html" ]; then
+                  INDEX_DIR=$(dirname "$FOUND_INDEX")
+                  echo "Promoting $INDEX_DIR to root"
+                  cp -R "$INDEX_DIR"/* "_site/" 2>/dev/null || true
+                fi
+                INDEX_FOUND=true
+              fi
+            fi
+          fi
+          
+          # Verify index.html exists
+          if [ ! -f "_site/index.html" ]; then
+            echo "⚠ WARNING: No index.html found, creating fallback"
+            echo '<!DOCTYPE html><html><head><title>Evaluation Results</title></head><body><h1>Evaluation completed</h1><p>Check artifacts for detailed results.</p></body></html>' > "_site/index.html"
+          fi
+          
+          echo ""
+          echo "=== Final _site structure ==="
+          echo "Root files:"
+          ls -la _site/ | head -15
+          echo ""
+          echo "Agent directories:"
+          ls -d _site/*/ 2>/dev/null | head -5
+          echo ""
+          echo "Sample files:"
+          find _site -name "*.webm" | head -3
+          find _site -type d -name "screenshots" | head -3
+          echo ""
+          if [ -f "_site/index.html" ]; then
+            echo "✓ index.html exists at root"
+          else
+            echo "✗ index.html MISSING"
+          fi
+          
+      - name: Upload GitHub Pages artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site/
+          
+  deploy:
+    needs: submit
+    if: always()
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+          

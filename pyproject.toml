@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "webarena-env-1"
+version = "0.1.0"
+description = "WebArena environment for collaborative problem development"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "playwright>=1.55.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.12.0",
+    "requests>=2.32.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+    "typer>=0.12.0",
+    "lb-code-tools>=0.1.0",
+]
+
+[project.entry-points."alignerr.plugins"]
+alignerr_plugin = "alignerr_plugin:setup_plugins"
+
+[dependency-groups]
+dev = []
+
+[tool.uv.sources]
+lb-code-tools = { git = "https://github.com/Labelbox/lb-code-tools.git" }
+
+[tool.hatch.build.targets.wheel]
+packages = ["alignerr_plugin"]
+
