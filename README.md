@@ -2,89 +2,85 @@
 
 Collaborative workspace for building WebArena environments for AI agent evaluation.
 
+## Overview
+
+This repository is a claimed task where contributors work together to build a WebArena environment. When merged to `main`, work is automatically submitted and evaluated.
+
 ## Quick Start
 
-This repository is a claimed task work directory where multiple contributors build WebArena environments together.
+1. **Navigate to the working directory:**
+   ```bash
+   cd work/2025-11-25-newton-muon-c1c28595/problems/webarena/2025-11-25-newton-muon-c1c28595
+   ```
 
-### For Contributors
+2. **Build your WebArena environment:**
+   - Modify `docker-compose.yaml` to define services
+   - Update `metadata.json` with configuration
+   - Add/edit tasks in `tasks/` directory
+   - Build your application (static files in `html/`, custom app in `environment/`, or your own structure)
 
-**Getting Started:**
-1. Install CLI: `uv tool install libs/alignerr-*.whl`
-2. Create a branch and work in `work/` directory
-3. Create PR when ready
-4. Merge to `main` triggers automatic submission
+3. **Test locally:**
+   ```bash
+   docker compose up -d
+   # Visit http://localhost:3001 (or your configured port)
+   docker compose down
+   ```
 
-**See full guide:** [CONTRIBUTING.md](CONTRIBUTING.md)
+4. **Commit and push to `main`:**
+   ```bash
+   git add .
+   git commit -m "Update WebArena environment"
+   git push origin main
+   ```
+   - Automatic submission triggers via GitHub Actions
+   - Evaluation results deployed to GitHub Pages
+   - Artifacts available in Actions tab
 
-### For WebArena Problem Creators
+## Working Directory Structure
 
-**Creating WebArena environments:**
-- Environment structure and metadata
-- Docker Compose configuration
-- Task definitions and validation
-- Evaluation criteria
-
-**See full documentation:** [docs/webarena.md](docs/webarena.md)
-
-## Automatic Submission
-
-When PRs are merged to `main`, GitHub Actions automatically:
-- Installs alignerr CLI from `libs/`
-- Runs `alignerr submit-work`
-- Submits your work to the backend
-
-Check results later with: `alignerr poll-results --wait`
-
-## Structure
-
+**Your work directory:**
 ```
-webarena-env-1/
-├── libs/                      # alignerr CLI wheel
-├── work/                      # WebArena environments
-│   ├── test_simple/          # Minimal example
-│   └── pet_store_demo/       # Complete e-commerce demo
-├── .github/workflows/         # Auto-submission workflow
-├── docs/                      # Documentation
-│   └── webarena.md           # WebArena technical docs
-└── CONTRIBUTING.md            # Contributor workflow guide
+work/2025-11-25-newton-muon-c1c28595/problems/webarena/2025-11-25-newton-muon-c1c28595/
+├── metadata.json              # Required: Problem configuration
+├── docker-compose.yaml        # Required: Services definition  
+├── README.md                  # Required: Problem description
+├── html/                      # Example: Static website files
+│   ├── index.html             #   (or use environment/ for custom apps)
+│   ├── style.css
+│   └── *.js
+└── tasks/                     # Required: Task definitions by difficulty
+    ├── easy/
+    │   ├── task_001.json
+    │   └── task_002.json
+    ├── medium/
+    └── hard/
 ```
 
-## Required Secrets
+**Required files:** `metadata.json`, `docker-compose.yaml`, `tasks/`
+**Your application:** Use `html/` for static files OR `environment/` for custom applications
+**Do not create new problem directories** - work within the structure above.
 
-Repository administrators must configure:
-- `ALIGNERR_BEARER_TOKEN` - Worker token for submission
+## Automatic Workflow
+
+When you push to `main`:
+
+1. **GitHub Actions triggers** and installs dependencies
+2. **Submits work** via `alignerr submit-work --wait`
+3. **Downloads evaluation results** (validation, model testing, reports)
+4. **Deploys to GitHub Pages** with aggregated reports
+5. **Uploads artifacts** (videos, screenshots, HTML reports)
+
+View results at: `https://<username>.github.io/<repo-name>/`
+
 
 ## Documentation
 
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow and best practices
-- **[docs/webarena.md](docs/webarena.md)** - WebArena environment specification
-## Example Environments
-
-Two complete examples are included:
-
-1. **`work/test_simple/`** - Minimal example
-   - Single static HTML page
-   - Basic task validation
-   - Good starting point
-
-2. **`work/pet_store_demo/`** - Complete e-commerce demo
-   - Multi-page application with navigation
-   - Shopping cart with localStorage
-   - 4 tasks at different difficulty levels
-   - Demonstrates evaluation types and Playwright actions
-
-### Test the Pet Store Demo
-
-```bash
-cd work/pet_store_demo
-docker compose up -d
-```
-
-Open http://localhost:3001 in your browser.
-
-See `work/pet_store_demo/README.md` for full documentation.
+- **[docs/webarena.md](docs/webarena.md)** - WebArena environment specification and guidelines
 
 ## Resources
 
-- CLI help: `alignerr --help`
-- Check configuration: `alignerr config`
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Detailed workflow and best practices
+- **[docs/webarena.md](docs/webarena.md)** - WebArena specification and guidelines
+- **GitHub Pages** - View evaluation results after submission
+- **Actions tab** - Download artifacts (videos, reports, screenshots)

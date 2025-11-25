@@ -81,20 +81,6 @@ docker compose down
 - Actions: Navigate to products, add Cat Scratching Post, view cart, checkout
 - Validation: Success message with confirmation number appears
 
-## Validation
-
-Validate this environment locally:
-
-```bash
-alignerr validate --problem-dir work/pet_store_demo
-```
-
-This runs:
-1. Schema validation (metadata.json, tasks, docker-compose)
-2. Task quality metrics (eval types, reference answers)
-3. Docker Compose health checks
-4. Ground truth validation (reference action sequences)
-
 ## Testing with Playwright
 
 You can test tasks manually using Playwright:
@@ -194,12 +180,3 @@ curl http://localhost:3001/products.html
 - Check browser console for errors
 - Ensure localStorage is available
 - Clear localStorage: `page.evaluate('localStorage.clear()')`
-
-## Next Steps
-
-1. Run validation: `alignerr validate --problem-dir work/pet_store_demo`
-2. Fix any validation errors
-3. Test all tasks manually
-4. Add more complex tasks (filters, multiple items, etc.)
-5. Submit via PR when ready
-

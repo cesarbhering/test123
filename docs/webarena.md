@@ -1,52 +1,51 @@
-# WebArena Problems - Setup Guide
+# WebArena Environment - Technical Guide
 
-This guide explains how to create, validate, and submit WebArena-style problems for the Alignerr benchmark.
+This guide explains how to build and configure your WebArena environment in this repository.
 
 ## What is WebArena?
 
-WebArena is a benchmark for evaluating AI agents on realistic web-based tasks. Each problem consists of:
+WebArena is a benchmark for evaluating AI agents on realistic web-based tasks. Your environment consists of:
 - **Docker Compose services** that define the web environment
 - **Task definitions** with expected behaviors and validation criteria
-- **Ground truth validation** using Playwright to verify tasks are solvable
-- **Reference action sequences** showing one way to complete each task
+- **Reference action sequences** showing how to complete each task
 
-## Problem Structure
+## Your Working Structure
 
+Your environment is located at:
 ```
-problems/webarena/<instance_id>/
+work/2025-11-25-newton-muon-c1c28595/problems/webarena/2025-11-25-newton-muon-c1c28595/
+```
+
+**Required files:**
+```
 ├── metadata.json          # Problem metadata and configuration
 ├── docker-compose.yaml    # Service definitions
-├── tasks/                 # Task definitions
-│   ├── easy/
-│   │   └── task_001.json
-│   ├── medium/
-│   │   └── task_050.json
-│   ├── hard/
-│   │   └── task_100.json
-│   ├── test_suite.json    # Task catalog
-│   └── README.md          # Task documentation
-├── environment/           # Optional: custom application code
-│   ├── backend/
-│   ├── frontend/
-│   └── data/
-└── html/                  # Optional: static files for nginx
+├── README.md              # Problem description
+└── tasks/                 # Task definitions
+    ├── easy/
+    │   └── task_001.json
+    ├── medium/
+    │   └── task_050.json
+    └── hard/
+        └── task_100.json
 ```
 
-## Quick Start
-
-### 1. Create Problem Structure
-
-```bash
-alignerr create-problem
+**Your application files:**
+```
+├── html/                  # Option 1: Static files for nginx
+│   ├── index.html
+│   ├── style.css
+│   └── *.js
+OR
+├── environment/           # Option 2: Custom application
+    ├── backend/
+    ├── frontend/
+    └── data/
 ```
 
-Select "2. webarena" when prompted. This creates:
-- `metadata.json` with problem configuration
-- `docker-compose.yaml` template
-- `tasks/task_1.json` template
-- `environment/` directory for custom code
+## Building Your Environment
 
-### 2. Define Your Environment
+### 1. Define Services
 
 Edit `docker-compose.yaml` to define your web services:
 
@@ -70,10 +69,10 @@ services:
 
 **Key requirements:**
 - All services must have healthchecks
-- Expose ports that don't conflict with other problems
+- Use unique ports (e.g., 3001) that don't conflict
 - Use read-only mounts where possible
 
-### 3. Configure metadata.json
+### 2. Configure metadata.json
 
 ```json
 {
@@ -108,7 +107,7 @@ services:
 - `wait_video_capture_seconds`: Extra wait before stopping video recording
 - `playwright_action_timeout_ms`: Timeout for individual Playwright actions
 
-### 4. Define Tasks
+### 3. Define Tasks
 
 Create task files in `tasks/` organized by difficulty:
 
@@ -163,7 +162,7 @@ Create task files in `tasks/` organized by difficulty:
 - `eval`: Evaluation criteria (see Evaluation Types below)
 - `reference_action_sequence`: Ground truth Playwright actions
 
-### 5. Evaluation Types
+## Evaluation Types
 
 WebArena supports multiple evaluation mechanisms:
 
@@ -206,50 +205,35 @@ Checks for strings in page content:
 - Provide multiple `required_contents` for better coverage
 - Avoid relying solely on `string_match`
 
-### 6. Validate Locally
+## Testing Locally
+
+Before pushing your changes, test your environment:
 
 ```bash
-alignerr validate --problem-dir problems/webarena/<instance_id>
+cd work/2025-11-25-newton-muon-c1c28595/problems/webarena/2025-11-25-newton-muon-c1c28595
+
+# Start services
+docker compose up -d
+
+# Check service health
+docker compose ps
+
+# Test in browser
+open http://localhost:3001
+
+# View logs if needed
+docker compose logs
+
+# Stop services
+docker compose down
 ```
 
-This runs all validation stages:
-
-#### Stage 1: Schema Validation
-- Validates `metadata.json` structure
-- Checks all required fields
-- Validates task JSON files
-- Verifies Docker Compose syntax
-
-#### Stage 2: Task Quality Metrics Validation
-- Checks each task has sufficient evaluation mechanisms
-- Requires at least 1 eval type
-- Requires reference answers OR HTML checks
-- Fails tasks with insufficient verification
-
-#### Stage 3: Docker Compose Health Check
-- Starts all services
-- Waits for healthchecks to pass
-- Verifies base_url is accessible
-- Checks all services are running
-
-#### Stage 4: Ground Truth Validation
-- Executes reference action sequences
-- Validates expected outcomes
-- Ensures tasks are completable
-- Captures screenshots for debugging
-
-### 7. Submit Your Problem
-
-```bash
-alignerr submit
-```
-
-This will:
-- Auto-detect your changed problem
-- Create a branch named `submission/<instance_id>`
-- Commit your changes
-- Push to origin
-- Provide a URL to create a PR
+**What to test:**
+- All services start and become healthy
+- Your application loads correctly
+- Navigation works as expected
+- Forms and interactions behave correctly
+- Tasks are actually completable manually
 
 ## Quality Metrics
 
@@ -435,49 +419,61 @@ Provide complete, working Playwright commands:
 - Add `reference_url` for `url_match` evaluation
 - Combine multiple eval types for robust validation
 
-## Examples
+## Working in This Repository
 
-## CLI Commands Reference
+This repository is set up for a single claimed task where contributors collaborate:
 
-### `alignerr create-problem`
-Create a new WebArena problem structure with templates.
+**Your working directory:**
+```
+work/2025-11-25-newton-muon-c1c28595/problems/webarena/2025-11-25-newton-muon-c1c28595/
+```
 
-### `alignerr validate --problem-dir <path>`
-Validate your problem locally (runs all validation stages).
+**Workflow:**
 
-**Options:**
-- `--problem-dir`: Path to problem directory
-- `--project-root`: Project root directory (default: current directory)
+1. **Build your environment** - Work in the directory above
+2. **Test locally** - Use `docker compose up -d` to test your environment
+3. **Push to main** - Automatic submission via GitHub Actions
+4. **Evaluation** - Backend runs validation and agent testing
+5. **Results** - Deployed to GitHub Pages with downloadable artifacts
 
-### `alignerr submit`
-Auto-detect changed problem, create branch, and push for PR.
+**What you need:**
+- Docker and Docker Compose for local testing
+- Git for committing changes
+- Access to this repository
 
-**Options:**
-- `--problem-dir`: Submit specific problem directory
-- `--branch-name`: Custom branch name (default: `submission/<instance_id>`)
+See existing files in `work/` directory for examples of:
+- Docker Compose service definitions
+- Task JSON files with proper evaluation criteria
+- Reference action sequences for ground truth validation
 
-### `alignerr evaluate`
-Run agent evaluation on tasks.
+## Testing Your Environment Locally
 
-**Options:**
-- `--config-path`: Path to evaluation config YAML
-- `--problem-dir`: Problem directory to evaluate
-- `--task-index`: Run specific task by index
-- `--task-name`: Run specific task by name pattern
+Before pushing, test your environment:
 
-### `alignerr report`
-Generate HTML reports from evaluation results.
+```bash
+cd work/2025-11-25-newton-muon-c1c28595/problems/webarena/2025-11-25-newton-muon-c1c28595
 
-**Options:**
-- `--result-dir`: Directory containing evaluation results
-- `--project-root`: Project root directory
+# Start services
+docker compose up -d
+
+# Check service health
+docker compose ps
+
+# View logs
+docker compose logs
+
+# Test in browser
+open http://localhost:3001  # or your configured port
+
+# Stop services
+docker compose down
+```
 
 ## Getting Help
 
-- Check validation errors in the output
-- Review the example problems in `problems/webarena/`
-- Ensure Docker services are healthy: `docker compose ps`
-- Test Playwright commands in isolation
-- Check the main README.md for setup instructions
-- Review task quality metrics in validation output
+- **Structure questions:** Check [README.md](../README.md) and [CONTRIBUTING.md](../CONTRIBUTING.md)
+- **Task format:** Review existing task JSON files in `tasks/` directory
+- **Docker issues:** `docker compose logs` to see service errors
+- **Testing:** Use browser dev tools to debug your web application
+- **Evaluation results:** Check GitHub Pages after submission
 

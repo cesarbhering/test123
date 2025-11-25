@@ -1,150 +1,100 @@
 # WebArena Environment - Contributor Guide
 
-This repository is a collaborative workspace for building WebArena environments. Multiple contributors work together to create web-based tasks for AI agent evaluation.
+This repository is a collaborative workspace for building a WebArena environment. Contributors work together in a single shared directory to create web-based tasks for AI agent evaluation.
 
-## Repository Structure
+## Working Directory
 
+**Your work directory is:**
 ```
-webarena-env-1/
-├── libs/
-│   └── alignerr-*.whl         # CLI tool for local development
-├── work/
-│   └── <environment_name>/    # Your WebArena environments
-│       ├── metadata.json
-│       ├── docker-compose.yaml
-│       ├── tasks/
-│       └── html/ or environment/
-├── .alignerrignore            # Files to exclude from submission
-└── .github/
-    └── workflows/
-        └── submit-on-merge.yml  # Auto-submission workflow
+work/2025-11-25-newton-muon-c1c28595/problems/webarena/2025-11-25-newton-muon-c1c28595/
 ```
+
+**Structure you should maintain:**
+```
+├── metadata.json              # Problem configuration
+├── docker-compose.yaml        # Services definition
+├── README.md                  # Problem description
+├── html/                      # Static website files
+│   ├── index.html
+│   ├── style.css
+│   └── *.js
+└── tasks/                     # Task definitions
+    ├── easy/
+    │   ├── task_001.json
+    │   └── task_002.json
+    ├── medium/
+    └── hard/
+```
+
+**Important:** Do not create new directories or move files outside this structure.
 
 ## Getting Started
 
 ### Prerequisites
 
-Install the alignerr CLI from the bundled wheel:
-
-```bash
-uv tool install libs/alignerr-*.whl
-```
-
-Verify installation:
-
-```bash
-alignerr --help
-```
+- Docker and Docker Compose installed
+- Git configured
+- Access to this repository
 
 ### Development Workflow
 
-1. **Create a branch for your work:**
+1. **Navigate to working directory:**
    ```bash
-   git checkout -b feature/my-environment
+   cd work/2025-11-25-newton-muon-c1c28595/problems/webarena/2025-11-25-newton-muon-c1c28595
    ```
 
-2. **Create or modify environments in `work/` directory:**
+2. **Modify the environment:**
+   - **Services**: Edit `docker-compose.yaml` to define web services
+   - **Configuration**: Update `metadata.json` for problem settings
+   - **Tasks**: Add/edit JSON files in `tasks/easy/`, `tasks/medium/`, `tasks/hard/`
+   - **Website**: Create/modify files in `html/` directory
+   - **Documentation**: Update `README.md` to describe your problem
+
+3. **Test locally:**
    ```bash
-   cd work
-   mkdir my_environment
-   cd my_environment
-   ```
-
-3. **Build your WebArena environment:**
-   - Create `metadata.json` with environment configuration
-   - Define services in `docker-compose.yaml`
-   - Add task definitions in `tasks/` directory
-   - Add application code or static files as needed
-
-
-4. **Test locally:**
-   ```bash
-   # Start your environment
+   # Start services
    docker compose up -d
    
-   # Verify services are healthy
+   # Check health
    docker compose ps
    
-   # Test tasks manually or with Playwright
+   # Test in browser
+   open http://localhost:3001  # or your configured port
+   
+   # View logs
+   docker compose logs
+   
+   # Stop services
+   docker compose down
    ```
 
-5. **Create a Pull Request:**
+4. **Commit and push:**
    ```bash
-   git add work/my_environment
-   git commit -m "Add my_environment WebArena tasks"
-   git push origin feature/my-environment
+   git add .
+   git commit -m "Update WebArena environment"
+   git push origin main
    ```
 
-6. **Get your PR reviewed and merged:**
-   Once approved, merge to `main` branch
+GitHub Actions will automatically submit and evaluate your work.
 
-### Automatic Submission
 
-When your PR is merged to `main`:
-- GitHub Actions automatically triggers
-- Installs alignerr CLI
-- Runs `alignerr submit-work` to submit your environment
-- Submission is sent to the backend for evaluation
+## What You Can Modify
 
-**No manual submission required!**
+Within the working directory, you can:
 
-## Checking Results
+- ✓ **Add/edit HTML, CSS, JavaScript files** in `html/`
+- ✓ **Create task definitions** in `tasks/easy/`, `tasks/medium/`, `tasks/hard/`
+- ✓ **Modify services** in `docker-compose.yaml`
+- ✓ **Update configuration** in `metadata.json`
+- ✓ **Document changes** in `README.md`
+- ✓ **Add supporting files** (images, data files, etc.)
 
-After your work is submitted, check evaluation results:
+Do not:
+- ✗ Create new problem directories
+- ✗ Move files outside the working directory
+- ✗ Modify files in `libs/`, `.github/`, or root level
 
-```bash
-# Poll for results (waits until ready)
-alignerr poll-results --wait
-
-# Or check manually
-alignerr poll-results
-```
-
-Results include:
-- Diversity analysis (problem uniqueness)
-- Execution results (test validation)
-- Model testing (LLM performance)
-- Requirements verification (compliance checks)
-
-Results are saved to `./results/<task-name>/` with HTML reports.
-
-## Working with Multiple Environments
-
-You can create multiple environments in the `work/` directory:
-
-```
-work/
-├── banking_app/
-├── ecommerce_site/
-└── admin_dashboard/
-```
-
-Each environment is independent and can be developed in parallel.
-
-## File Exclusions
-
-The CLI automatically excludes common files when submitting:
-- `__pycache__`, `*.pyc`, `node_modules`
-- `.git`, `.venv`, `.env`
-- `.vscode`, `.idea`, `.DS_Store`
-
-### Custom Exclusions
-
-Add a `.alignerrignore` file to exclude additional files:
-
-```text
-# Custom exclusions
-*.tmp
-debug/
-local_config.yaml
-```
-
-## Repository Secrets
-
-**Required GitHub secret:**
-- `ALIGNERR_BEARER_TOKEN` - Worker authentication token for submission
-
-This is configured by the repository administrator. Contact them if submission fails with authentication errors.
+## Automatic Submission
 
 ## Best Practices
 
@@ -183,11 +133,6 @@ Check GitHub Actions logs:
 2. Find the latest "Submit Work on Merge to Main" workflow
 3. Review logs for error messages
 
-Common issues:
-- Missing `ALIGNERR_BEARER_TOKEN` secret
-- Invalid wheel file in `libs/`
-- No active task claimed in alignerr system
-
 ### Local Testing Issues
 
 If Docker services won't start:
@@ -209,19 +154,38 @@ If tasks fail:
 - Test Playwright commands manually
 - Review evaluation criteria
 
+## Viewing Results
+
+After submission completes, results are available in multiple places:
+
+1. **GitHub Pages** - View aggregated reports at your repository's GitHub Pages URL
+   - Includes all agent evaluation reports
+   - Side-by-side comparisons of agent performance
+   - Videos and screenshots of agent interactions
+
+2. **GitHub Actions Artifacts** - Download from the Actions run page:
+   - `evaluation-results` - Complete results directory
+   - `validation-reports` - HTML validation reports
+   - `github-pages` - Pre-packaged Pages deployment
+
+Results include:
+- HTML reports with side-by-side comparisons
+- Video recordings of agent interactions (.webm files)
+- Screenshots at each step
+- Trajectory data (JSON)
+- Pass/fail metrics by agent
+
 ## Resources
 
-- Full WebArena documentation: See `docs/webarena.md`
-- alignerr CLI documentation: `alignerr --help`
-- Example environments:
-  - `work/test_simple/` - Minimal example
-  - `work/pet_store_demo/` - Complete demo with full README
-- Mothership repo: See `README-mothership.md` for system overview
+- **WebArena specification:** [docs/webarena.md](docs/webarena.md)
+- **Example tasks:** See existing JSON files in `tasks/` directory
+- **Docker Compose docs:** https://docs.docker.com/compose/
+- **Playwright (for reference actions):** https://playwright.dev/
 
 ## Getting Help
 
-- Check existing environments in `work/` for examples
-- Review GitHub Actions logs for submission issues
-- Contact repository maintainers for access issues
-- Use `alignerr config` to verify CLI setup
+- **Examples:** Check existing files in `work/` directory
+- **Submission issues:** Review GitHub Actions logs
+- **Docker problems:** Use `docker compose logs` to debug
+- **Task format:** Look at existing task JSON files in `tasks/`
 
