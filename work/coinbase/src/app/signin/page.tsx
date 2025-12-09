@@ -197,7 +197,7 @@ const LoginPage = () => {
                   <VStack paddingTop={1} alignItems="center">
                     <Text font="body" textAlign="center" as="p">
                       Don't have an account?{' '}
-                      <Link href="/signup">Sign up</Link>
+                      <Link href="#">Sign up</Link>
                     </Text>
                   </VStack>
 
@@ -208,7 +208,7 @@ const LoginPage = () => {
                     </Text>
                     <Text font="legal" color="fgMuted" textAlign="center">
                       See our{' '}
-                      <Link href="/privacy">
+                      <Link href="#">
                         Privacy Policy
                       </Link>{' '}
                       for more info.
