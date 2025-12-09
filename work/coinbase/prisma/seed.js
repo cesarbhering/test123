@@ -100,7 +100,7 @@ async function main() {
   });
   console.log('Created ETH balance:', ethBalance);
 
-  console.log('\n✅ Seed completed successfully!');
+  console.log('\nSeed completed successfully!');
   console.log('\nTest login credentials:');
   console.log('Email: test@coinbase.com');
   console.log('Password: password123');

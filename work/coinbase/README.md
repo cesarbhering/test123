@@ -16,14 +16,11 @@ npx prisma migrate dev
 
 # Seed database with test data
 npm run db:seed
-```
 
-## Run
-
-```bash
+# Run
 npm run dev
 ```
-
+### Usage
 Application runs at: http://localhost:3000
 
 ## Test Login
@@ -33,7 +30,7 @@ Application runs at: http://localhost:3000
 
 ## Routes
 
-- `/` - Home page
+- `/` - Landing page
 - `/signin` - Sign in page
 - `/home` - Dashboard (after login)
 
