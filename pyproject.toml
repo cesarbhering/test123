@@ -30,4 +30,3 @@ lb-code-tools = { git = "https://github.com/Labelbox/lb-code-tools.git" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["alignerr_plugin"]
-
