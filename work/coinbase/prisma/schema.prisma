@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  balances Balance[]
+
+  @@map("users")
+}
+
+// User balances for different coins
+model Balance {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  coinSymbol String   @map("coin_symbol")
+  amount     Float    @default(0)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coin Coin @relation(fields: [coinSymbol], references: [symbol])
+
+  // One balance per coin per user
+  @@unique([userId, coinSymbol])
+  @@index([userId])
+  @@map("balances")
+}
+
+// Available coins and their prices
+model Coin {
+  id              String   @id @default(cuid())
+  symbol          String   @unique
+  name            String
+  currentPriceUsd Float    @map("current_price_usd")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  balances Balance[]
+
+  @@map("coins")
+}

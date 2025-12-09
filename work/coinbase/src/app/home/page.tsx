@@ -3,10 +3,10 @@ import { ThemeProvider } from '@coinbase/cds-web';
 import { defaultTheme } from '@coinbase/cds-web/themes/defaultTheme';
 import { Box, VStack } from '@coinbase/cds-web/layout';
 import { MediaQueryProvider } from '@coinbase/cds-web/system';
-import { Text, Link } from '@coinbase/cds-web/typography';
+import { Text } from '@coinbase/cds-web/typography';
 import { LogoMark } from '@coinbase/cds-web/icons';
 
-export default function Home() {
+export default function HomePage() {
   return (
     <MediaQueryProvider>
       <ThemeProvider theme={defaultTheme} activeColorScheme="light">
@@ -25,18 +25,12 @@ export default function Home() {
             gap={3}
           >
             <Text as="h1" font="display2" textAlign="center">
-              Work in Progress
+              Welcome to Coinbase
             </Text>
 
             <Text font="body" color="fgMuted" textAlign="center">
-              This page is currently under development.
+              You have successfully logged in!
             </Text>
-
-            <Box paddingTop={2}>
-              <Link href="/signin">
-                Go to Sign In
-              </Link>
-            </Box>
           </VStack>
         </Box>
       </ThemeProvider>
