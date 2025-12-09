@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ThemeProvider } from '@coinbase/cds-web';
 import { defaultTheme } from '@coinbase/cds-web/themes/defaultTheme';
 import { Box, VStack, HStack, Divider } from '@coinbase/cds-web/layout';
@@ -52,9 +53,12 @@ const SocialButton = ({ icon, children }: { icon: React.ReactNode; children: Rea
 );
 
 const LoginPage = () => {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Email validation function
   const isValidEmail = (email: string) => {
@@ -67,6 +71,7 @@ const LoginPage = () => {
   const handleContinue = () => {
     if (isEmailValid) {
       setShowPasswordForm(true);
+      setError(''); // Clear any previous errors
     }
   };
 
@@ -77,14 +82,38 @@ const LoginPage = () => {
   };
 
   const handlePasswordKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && password) {
+    if (e.key === 'Enter' && password && !isLoading) {
       handleLogin();
     }
   };
 
   const handleLogin = async () => {
-    // TODO: Implement login logic
-    console.log('Login attempt with:', { email, password });
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Success - navigate to /home
+        router.push('/home');
+      } else {
+        // Error - show error message
+        setError('Your email or password are incorrect; try again.');
+      }
+    } catch (err) {
+      setError('Your email or password are incorrect; try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -226,14 +255,30 @@ const LoginPage = () => {
                     <Text as="label" font="label1">
                       Password
                     </Text>
-                    <TextInput
-                      accessibilityLabel="Password"
-                      type="password"
-                      placeholder=""
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      onKeyPress={handlePasswordKeyPress}
-                    />
+                    <Box
+                      width="100%"
+                      style={{
+                        border: error ? '2px solid #f0616d' : 'none',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      <TextInput
+                        accessibilityLabel="Password"
+                        type="password"
+                        placeholder=""
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          setError(''); // Clear error when user types
+                        }}
+                        onKeyPress={handlePasswordKeyPress}
+                      />
+                    </Box>
+                    {error && (
+                      <Text font="label2" style={{ color: '#f0616d' }}>
+                        {error}
+                      </Text>
+                    )}
                   </VStack>
 
                   {/* Forgot Password Link */}
@@ -244,8 +289,13 @@ const LoginPage = () => {
                   </Box>
 
                   {/* Continue Button */}
-                  <Button variant="primary" width="100%" disabled={!password} onClick={handleLogin}>
-                    Continue
+                  <Button
+                    variant="primary"
+                    width="100%"
+                    disabled={!password || isLoading}
+                    onClick={handleLogin}
+                  >
+                    {isLoading ? 'Signing in...' : 'Continue'}
                   </Button>
 
                   {/* Cancel Login Link */}
