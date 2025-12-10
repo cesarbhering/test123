@@ -1,10 +1,13 @@
 'use client';
-import { Box } from '@coinbase/cds-web/layout';
+import { ContentTemplate } from './ContentTemplate';
 
 export const CreditCardContent = () => {
   return (
-    <Box padding={4} style={{ flexGrow: 1 }}>
+    <ContentTemplate
+      title="Credit Card EMPTY"
+      subtitle="Manage your Coinbase credit card"
+    >
       {/* Credit Card content goes here */}
-    </Box>
+    </ContentTemplate>
   );
 };

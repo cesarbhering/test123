@@ -1,10 +1,13 @@
 'use client';
-import { Box } from '@coinbase/cds-web/layout';
+import { ContentTemplate } from './ContentTemplate';
 
 export const HomeContent = () => {
   return (
-    <Box padding={4} style={{ flexGrow: 1 }}>
+    <ContentTemplate
+      title="Home EMPTY"
+      subtitle="Welcome to your Coinbase dashboard"
+    >
       {/* Home content goes here */}
-    </Box>
+    </ContentTemplate>
   );
 };

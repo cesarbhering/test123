@@ -1,10 +1,13 @@
 'use client';
-import { Box } from '@coinbase/cds-web/layout';
+import { ContentTemplate } from './ContentTemplate';
 
 export const CoinbaseOneContent = () => {
   return (
-    <Box padding={4} style={{ flexGrow: 1 }}>
+    <ContentTemplate
+      title="Coinbase One EMPTY" 
+      subtitle="Your premium Coinbase membership"
+    >
       {/* Coinbase One content goes here */}
-    </Box>
+    </ContentTemplate>
   );
 };

@@ -1,10 +1,13 @@
 'use client';
-import { Box } from '@coinbase/cds-web/layout';
+import { ContentTemplate } from './ContentTemplate';
 
 export const TradeContent = () => {
   return (
-    <Box padding={4} style={{ flexGrow: 1 }}>
+    <ContentTemplate
+      title="Trade EMPTY"
+      subtitle="Buy, sell, and swap cryptocurrencies"
+    >
       {/* Trade content goes here */}
-    </Box>
+    </ContentTemplate>
   );
 };
