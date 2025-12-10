@@ -16,11 +16,14 @@
     "@coinbase/cds-illustrations": "^4",
     "@coinbase/cds-web": "^8",
     "@coinbase/cds-web-visualization": "^3",
-    "@prisma/client": "^5.22.0",
+    "@libsql/client": "^0.15.15",
+    "@prisma/adapter-better-sqlite3": "^7.1.0",
+    "@prisma/adapter-libsql": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "better-sqlite3": "^12.5.0",
     "dotenv": "^17.2.3",
     "framer-motion": "^10",
     "next": "^15.4.8",
-    "prisma": "^5.22.0",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -28,6 +31,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "prisma": "^7.1.0",
     "typescript": "~5.9.2"
   }
 }
