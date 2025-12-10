@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThemeProvider } from '@coinbase/cds-web';
 import { defaultTheme } from '@coinbase/cds-web/themes/defaultTheme';
@@ -10,6 +10,7 @@ import { TextInput } from '@coinbase/cds-web/controls';
 import { Button } from '@coinbase/cds-web/buttons';
 import { LogoMark } from '@coinbase/cds-web/icons';
 import { useUser } from '../context/UserContext';
+import { db, initializeDatabase } from '@/lib/storage';
 
 // Custom SVG icons for social login
 const PasskeyIcon = () => (
@@ -62,6 +63,11 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Initialize database on component mount
+  useEffect(() => {
+    initializeDatabase();
+  }, []);
+
   // Email validation function
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -89,31 +95,53 @@ const LoginPage = () => {
     }
   };
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     setError('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      // Find user by email
+      const user = db.users.getByEmail(email);
+
+      // Check if user exists
+      if (!user) {
+        setError('Your email or password are incorrect; try again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Check password (plain text comparison)
+      if (user.password !== password) {
+        setError('Your email or password are incorrect; try again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Get user balances
+      const balances = db.balances.getByUserId(user.id);
+
+      // Enrich balances with coin data
+      const enrichedBalances = balances.map((balance) => {
+        const coin = db.coins.getBySymbol(balance.coinSymbol);
+        return {
+          coin: coin?.symbol || balance.coinSymbol,
+          coinName: coin?.name || balance.coinSymbol,
+          amount: balance.amount,
+          priceUsd: coin?.currentPriceUsd || 0,
+        };
       });
 
-      const data = await response.json();
+      // Store user data in context
+      setUser({
+        id: user.id,
+        email: user.email,
+        createdAt: user.createdAt,
+      });
 
-      if (response.ok) {
-        // Store user data in context
-        setUser(data.user);
-        // Success - navigate to /home
-        router.push('/home');
-      } else {
-        // Error - show error message
-        setError('Your email or password are incorrect; try again.');
-      }
+      // Success - navigate to /home
+      router.push('/home');
     } catch (err) {
+      console.error('Login error:', err);
       setError('Your email or password are incorrect; try again.');
     } finally {
       setIsLoading(false);
