@@ -1,37 +1,57 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { ThemeProvider } from '@coinbase/cds-web';
 import { defaultTheme } from '@coinbase/cds-web/themes/defaultTheme';
-import { Box, VStack } from '@coinbase/cds-web/layout';
+import { Box } from '@coinbase/cds-web/layout';
 import { MediaQueryProvider } from '@coinbase/cds-web/system';
-import { Text } from '@coinbase/cds-web/typography';
-import { LogoMark } from '@coinbase/cds-web/icons';
+import { Sidebar } from '../components/Sidebar';
+import { TopNavbar } from '../components/TopNavbar';
+import { MainContent } from '../components/Content';
 
 export default function HomePage() {
+  const [activeItem, setActiveItem] = useState('home');
+  const [pageTitle, setPageTitle] = useState('Home');
+
+  useEffect(() => {
+    document.title = `Coinbase - ${pageTitle} | Alignerr`;
+  }, [pageTitle]);
+
+  const handleActiveItemChange = (id: string, label: string) => {
+    setActiveItem(id);
+    setPageTitle(label);
+  };
+
   return (
     <MediaQueryProvider>
       <ThemeProvider theme={defaultTheme} activeColorScheme="light">
-        <Box background="bg" minHeight="100vh" width="100%">
-          {/* Coinbase Logo */}
-          <Box padding={3}>
-            <LogoMark size={32} />
-          </Box>
+        <Box
+          background="bg"
+          minHeight="100vh"
+          width="100%"
+          display="flex"
+          style={{ overflow: 'hidden' }}
+        >
+          {/* Sidebar */}
+          <Sidebar activeItem={activeItem} onActiveItemChange={handleActiveItemChange} />
 
-          {/* Centered Content */}
-          <VStack
-            width="100%"
-            alignItems="center"
-            justifyContent="center"
-            paddingTop={10}
-            gap={3}
+          {/* Main content area */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            style={{
+              flexGrow: 1,
+              minWidth: 0,
+              borderLeft: '1px solid #E8EAED',
+            }}
           >
-            <Text as="h1" font="display2" textAlign="center">
-              Welcome to Coinbase
-            </Text>
+            {/* Top Navbar */}
+            <TopNavbar title={pageTitle} />
 
-            <Text font="body" color="fgMuted" textAlign="center">
-              You have successfully logged in!
-            </Text>
-          </VStack>
+            {/* Content Area */}
+            <Box background="bg" style={{ flexGrow: 1 }}>
+              <MainContent activeSection={activeItem} />
+            </Box>
+          </Box>
         </Box>
       </ThemeProvider>
     </MediaQueryProvider>

@@ -4,7 +4,7 @@ import '@coinbase/cds-web/defaultFontStyles';
 import '@coinbase/cds-web/globalStyles';
 
 export const metadata: Metadata = {
-  title: 'Coinbase - Login | Alignerr',
+  title: 'Coinbase - Home | Alignerr',
 };
 
 export default function RootLayout({
