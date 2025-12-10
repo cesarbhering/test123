@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import '@coinbase/cds-icons/fonts/web/icon-font.css';
 import '@coinbase/cds-web/defaultFontStyles';
 import '@coinbase/cds-web/globalStyles';
+import { Providers } from './components/Providers';
 
 export const metadata: Metadata = {
   title: 'Coinbase - Home | Alignerr',
@@ -14,7 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

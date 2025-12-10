@@ -1,8 +1,10 @@
 'use client';
-import { Box, HStack } from '@coinbase/cds-web/layout';
+import { Box, HStack, VStack } from '@coinbase/cds-web/layout';
 import { Text } from '@coinbase/cds-web/typography';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import avatarImg from '../../assets/avatar.png';
+import { useUser } from '../../context/UserContext';
 
 const SearchIcon = ({ color = '#8A919E' }: { color?: string }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -53,13 +55,89 @@ const GridIcon = () => (
   </svg>
 );
 
+const AddAccountIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B616E" strokeWidth="2">
+    <circle cx="9" cy="7" r="4" />
+    <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+    <line x1="19" y1="8" x2="19" y2="14" />
+    <line x1="16" y1="11" x2="22" y2="11" />
+  </svg>
+);
+
+const SettingsIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B616E" strokeWidth="2">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
+
+const DarkModeIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B616E" strokeWidth="2">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+
+const SignOutIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E53935" strokeWidth="2">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <polyline points="16 17 21 12 16 7" />
+    <line x1="21" y1="12" x2="9" y2="12" />
+  </svg>
+);
+
+// Helper function to extract display name from email
+const getDisplayNameFromEmail = (email: string): string => {
+  const localPart = email.split('@')[0];
+  // Capitalize first letter of each word
+  return localPart
+    .split(/[._-]/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+// Helper function to get initials from name
+const getInitials = (name: string): string => {
+  const words = name.split(' ');
+  if (words.length >= 2) {
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
+};
+
 interface TopNavbarProps {
   title?: string;
 }
 
 export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
+  const router = useRouter();
+  const { user, logout } = useUser();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const displayName = user?.name || (user?.email ? getDisplayNameFromEmail(user.email) : 'User');
+  const userEmail = user?.email || '';
+  const initials = getInitials(displayName);
+
+  const handleSignOut = () => {
+    logout();
+    setMenuOpen(false);
+    router.push('/signin');
+  };
 
   return (
     <Box
@@ -167,27 +245,207 @@ export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
             <GridIcon />
           </Box>
 
-          {/* User Avatar */}
-          <Box
-            as="button"
-            border="none"
-            cursor="pointer"
-            style={{
-              backgroundColor: 'transparent',
-              marginLeft: 8,
-              padding: 0,
-            }}
-          >
-            <img
-              src={avatarImg.src}
-              alt="User Avatar"
+          {/* User Avatar with Dropdown */}
+          <Box style={{ position: 'relative' }} ref={menuRef}>
+            <Box
+              as="button"
+              border="none"
+              cursor="pointer"
+              onClick={() => setMenuOpen(!menuOpen)}
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                display: 'block',
+                backgroundColor: 'transparent',
+                marginLeft: 8,
+                padding: 0,
               }}
-            />
+            >
+              <img
+                src={avatarImg.src}
+                alt="User Avatar"
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  display: 'block',
+                }}
+              />
+            </Box>
+
+            {/* Dropdown Menu */}
+            {menuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: 8,
+                  width: 350,
+                  backgroundColor: 'white',
+                  font: 'menu',
+                  borderRadius: 12,
+                  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.15)',
+                  zIndex: 1000,
+                  overflow: 'hidden',
+                }}
+              >
+                {/* User Info Header */}
+                <div style={{ padding: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <img
+                      src={avatarImg.src}
+                      alt="User Avatar"
+                      style={{
+                        font: 'menu',
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        flexShrink: 0,
+                      }}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                      <span style={{ font: 'menu', fontWeight: 650, fontSize: '16px', color: '#000' }}>
+                        {displayName}
+                      </span>
+                      <span style={{ font: 'menu', fontSize: '14px', color: '#5B616E' }}>
+                        {userEmail}
+                      </span>
+                      <span
+                        style={{ font: 'menu', color: '#0052FF', fontSize: '14px', cursor: 'pointer', textDecoration: 'bold' }}
+                      >
+                        Manage account
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Menu Items */}
+                <div style={{ borderTop: '1px solid #E8EAED' }}>
+                  {/* Add account */}
+                  <button
+                    style={{
+                      width: '100%',
+                      font: 'menu',
+                      padding: '12px 16px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      backgroundColor: 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#F5F5F5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <AddAccountIcon />
+                    <span style={{ font: 'menu', fontSize: '16px', color: '#000' }}>Add account</span>
+                  </button>
+
+                  {/* Settings */}
+                  <button
+                    style={{
+                      width: '100%',
+                      font: 'menu',
+                      padding: '12px 16px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      backgroundColor: 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#F5F5F5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <SettingsIcon />
+                    <span style={{ font: 'menu', fontSize: '16px', color: '#000' }}>Settings</span>
+                  </button>
+
+                  {/* Dark mode */}
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    style={{
+                      width: '100%',
+                      font: 'menu',
+                      padding: '12px 16px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      backgroundColor: 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#F5F5F5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <DarkModeIcon />
+                      <span style={{ font: 'menu', fontSize: '16px', color: '#000' }}>Dark mode</span>
+                    </div>
+                    {/* Toggle Switch */}
+                    <div
+                      style={{
+                        width: 44,
+                        height: 24,
+                        borderRadius: 12,
+                        backgroundColor: darkMode ? '#0052FF' : '#E0E0E0',
+                        position: 'relative',
+                        transition: 'background-color 0.2s',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: '50%',
+                          backgroundColor: 'white',
+                          position: 'absolute',
+                          top: 2,
+                          left: darkMode ? 22 : 2,
+                          transition: 'left 0.2s',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                        }}
+                      />
+                    </div>
+                  </button>
+
+                  {/* Sign out */}
+                  <button
+                    onClick={handleSignOut}
+                    style={{
+                      width: '100%',
+                      font: 'menu',
+                      padding: '12px 16px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      backgroundColor: 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#F5F5F5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <SignOutIcon />
+                    <span style={{ fontSize: '16px', color: '#E53935' }}>Sign out</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </Box>
         </HStack>
       </HStack>
