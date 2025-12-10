@@ -1,0 +1,37 @@
+@font-face {
+  font-family: 'Coinbase Display';
+  src: url('/fonts/Coinbase-Display/Coinbase_Display-Regular-web-1.32.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Coinbase Display';
+  src: url('/fonts/Coinbase-Display/Coinbase_Display-Light-web-1.32.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Coinbase Display';
+  src: url('/fonts/Coinbase-Display/Coinbase_Display-Medium-web-1.32.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Coinbase Display';
+  src: url('/fonts/Coinbase-Display/Coinbase_Display-Bold-web-1.32.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.balance-display {
+  font-family: 'Coinbase Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
