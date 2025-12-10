@@ -1,5 +1,4 @@
 'use client';
-import { Box, VStack, HStack } from '@coinbase/cds-web/layout';
 import { Text } from '@coinbase/cds-web/typography';
 import { ReactNode } from 'react';
 
@@ -17,37 +16,45 @@ export const ContentTemplate = ({
   children,
 }: ContentTemplateProps) => {
   return (
-    <Box
-      padding={4}
+    <div
       style={{
-        flexGrow: 1,
-        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100%',
         backgroundColor: '#f8f8f8',
+        padding: 24,
+        boxSizing: 'border-box',
       }}
     >
-      <VStack gap={4}>
-        {(title || headerAction) && (
-          <HStack justifyContent="space-between" alignItems="center">
-            <VStack gap={1}>
-              {title && (
-                <Text as="h1" font="title2">
-                  {title}
-                </Text>
-              )}
-              {subtitle && (
-                <Text as="p" font="body" color="fgMuted">
-                  {subtitle}
-                </Text>
-              )}
-            </VStack>
-            {headerAction && <Box>{headerAction}</Box>}
-          </HStack>
-        )}
+      {(title || headerAction) && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 24,
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {title && (
+              <Text as="h1" font="title2">
+                {title}
+              </Text>
+            )}
+            {subtitle && (
+              <Text as="p" font="body" color="fgMuted">
+                {subtitle}
+              </Text>
+            )}
+          </div>
+          {headerAction && <div>{headerAction}</div>}
+        </div>
+      )}
 
-        <Box style={{ width: '100%' }}>
-          {children}
-        </Box>
-      </VStack>
-    </Box>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </div>
+    </div>
   );
 };

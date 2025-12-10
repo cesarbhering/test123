@@ -26,12 +26,11 @@ export default function HomePage() {
       <ThemeProvider theme={defaultTheme} activeColorScheme="light">
         <Box
           background="bg"
-          minHeight="100vh"
           width="100%"
           display="flex"
-          style={{ overflow: 'hidden' }}
+          style={{ height: '100vh', overflow: 'hidden' }}
         >
-          {/* Sidebar */}
+          {/* Sidebar - fixed position */}
           <Sidebar activeItem={activeItem} onActiveItemChange={handleActiveItemChange} />
 
           {/* Main content area */}
@@ -41,16 +40,20 @@ export default function HomePage() {
             style={{
               flexGrow: 1,
               minWidth: 0,
+              height: '100%',
               borderLeft: '1px solid #E8EAED',
+              overflow: 'hidden',
             }}
           >
-            {/* Top Navbar */}
-            <TopNavbar title={pageTitle} />
+            {/* Top Navbar - fixed at top */}
+            <div style={{ flexShrink: 0 }}>
+              <TopNavbar title={pageTitle} />
+            </div>
 
-            {/* Content Area */}
-            <Box background="bg" style={{ flexGrow: 1 }}>
+            {/* Content Area - scrollable */}
+            <div style={{ flex: 1, overflow: 'auto' }}>
               <MainContent activeSection={activeItem} />
-            </Box>
+            </div>
           </Box>
         </Box>
       </ThemeProvider>

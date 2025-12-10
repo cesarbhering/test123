@@ -4,7 +4,10 @@ import { Text } from '@coinbase/cds-web/typography';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import avatarImg from '../../assets/avatar.png';
+import notificationsImg from '../../assets/notifications.svg';
+import settingImg from '../../assets/setting.png';
 import { useUser } from '../../context/UserContext';
+import { useNotifications, Notification } from '../../context/NotificationContext';
 
 const SearchIcon = ({ color = '#8A919E' }: { color?: string }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -55,6 +58,140 @@ const GridIcon = () => (
   </svg>
 );
 
+// Grid Menu Icons
+const CoinbaseMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <circle cx="16" cy="16" r="16" fill="#0052FF" />
+    <path d="M16 6C10.48 6 6 10.48 6 16C6 21.52 10.48 26 16 26C21.52 26 26 21.52 26 16C26 10.48 21.52 6 16 6ZM13.5 19.5C12.12 19.5 11 18.38 11 17V15C11 13.62 12.12 12.5 13.5 12.5H18.5C19.88 12.5 21 13.62 21 15V17C21 18.38 19.88 19.5 18.5 19.5H13.5Z" fill="white" />
+  </svg>
+);
+
+const AdvancedMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <circle cx="16" cy="16" r="14" fill="#0052FF" />
+    <path d="M16 2C23.732 2 30 8.268 30 16C30 23.732 23.732 30 16 30V2Z" fill="#FFC107" />
+    <circle cx="16" cy="16" r="6" fill="white" />
+  </svg>
+);
+
+const BaseAppMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect width="32" height="32" rx="8" fill="#0052FF" />
+    <circle cx="16" cy="16" r="8" fill="white" />
+  </svg>
+);
+
+const BusinessMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect x="2" y="8" width="12" height="22" fill="#0052FF" />
+    <rect x="16" y="2" width="14" height="12" fill="#FFC107" />
+    <rect x="16" y="16" width="14" height="14" fill="#0052FF" />
+  </svg>
+);
+
+const PrimeMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <defs>
+      <linearGradient id="primeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#0052FF" />
+        <stop offset="100%" stopColor="#00D4FF" />
+      </linearGradient>
+    </defs>
+    <circle cx="16" cy="16" r="14" fill="url(#primeGrad)" />
+  </svg>
+);
+
+const ExchangeMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect x="4" y="4" width="10" height="10" fill="#0052FF" />
+    <rect x="18" y="4" width="10" height="10" fill="#00D4FF" />
+    <rect x="4" y="18" width="10" height="10" fill="#00D4FF" />
+    <rect x="18" y="18" width="10" height="10" fill="#0052FF" />
+  </svg>
+);
+
+const DerivativesMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect x="4" y="8" width="10" height="16" fill="#0052FF" transform="rotate(-10 4 8)" />
+    <rect x="14" y="6" width="10" height="16" fill="#00D4FF" transform="rotate(10 14 6)" />
+  </svg>
+);
+
+const DevPlatformMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect width="32" height="32" rx="8" fill="#0052FF" />
+    <path d="M10 16L14 12L10 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M18 20H24" stroke="white" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const DevDocsMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <circle cx="16" cy="16" r="14" fill="#0052FF" />
+    <circle cx="12" cy="16" r="4" fill="#FFC107" />
+    <circle cx="20" cy="16" r="4" fill="#FFC107" />
+  </svg>
+);
+
+const BaseBuildMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect x="4" y="4" width="10" height="10" fill="#0052FF" />
+    <rect x="18" y="4" width="10" height="10" fill="#00D4FF" />
+    <rect x="4" y="18" width="24" height="10" fill="#0052FF" />
+  </svg>
+);
+
+const HelpMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect width="32" height="32" rx="8" fill="#0052FF" />
+    <path d="M16 8C13.24 8 11 10.24 11 13H14C14 11.9 14.9 11 16 11C17.1 11 18 11.9 18 13C18 14.1 17.1 15 16 15C15.45 15 15 15.45 15 16V19H17V16.9C18.72 16.44 20 14.87 20 13C20 10.24 17.76 8 16 8ZM15 21V23H17V21H15Z" fill="white" />
+  </svg>
+);
+
+const AccountMenuIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect width="32" height="32" rx="8" fill="#F0F0F0" />
+    <circle cx="16" cy="12" r="5" fill="#666" />
+    <path d="M8 26C8 21.58 11.58 18 16 18C20.42 18 24 21.58 24 26" stroke="#666" strokeWidth="2" />
+  </svg>
+);
+
+const ChevronRightIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <path d="M9 18L15 12L9 6" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const GridMenuItem = ({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick?: () => void }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <Box
+      as="button"
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 96,
+        padding: '12px 8px',
+        backgroundColor: isHovered ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
+        borderRadius: 12,
+        border: 'none',
+        cursor: 'pointer',
+        gap: 8,
+        transition: 'background-color 0.15s ease',
+      }}
+    >
+      {icon}
+      <Text font="caption" style={{ textAlign: 'center' }}>{label}</Text>
+    </Box>
+  );
+};
+
 const AddAccountIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B616E" strokeWidth="2">
     <circle cx="9" cy="7" r="4" />
@@ -85,6 +222,132 @@ const SignOutIcon = () => (
   </svg>
 );
 
+// Notification Bell Illustration
+const NotificationBellIllustration = () => (
+  <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+    {/* Bell dome */}
+    <ellipse cx="60" cy="35" rx="35" ry="20" fill="#E8EAED" />
+    {/* Red dot on bell */}
+    <circle cx="80" cy="30" r="10" fill="#E53935" />
+    {/* Black arc on bell */}
+    <path d="M45 25 Q60 15 75 25" stroke="#000" strokeWidth="3" fill="none" strokeLinecap="round" />
+    {/* Bell body */}
+    <path d="M30 50 L30 75 Q30 85 40 85 L80 85 Q90 85 90 75 L90 50 Z" fill="#E8EAED" />
+    {/* Blue band */}
+    <rect x="30" y="70" width="60" height="15" fill="#0052FF" />
+    {/* Gray bottom */}
+    <rect x="35" y="85" width="50" height="10" fill="#9CA3AF" />
+    {/* Yellow clapper */}
+    <circle cx="60" cy="100" r="8" fill="#FFC107" />
+    {/* Sound lines */}
+    <path d="M20 55 L15 50" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
+    <path d="M20 65 L12 65" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
+    <path d="M20 75 L15 80" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
+    <path d="M100 55 L105 50" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
+    <path d="M100 65 L108 65" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
+    <path d="M100 75 L105 80" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+// Settings Gear Icon
+const SettingsGearIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="3" stroke="#5B616E" strokeWidth="2" />
+    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="#5B616E" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+// Close/X Icon for notifications
+const CloseIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <path d="M18 6L6 18M6 6L18 18" stroke="#5B616E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// Notification type icons
+const InfoIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="10" fill="#0052FF" />
+    <path d="M12 16V12M12 8H12.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const SuccessIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="10" fill="#00D395" />
+    <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const WarningIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <path d="M12 2L2 22H22L12 2Z" fill="#F5A623" />
+    <path d="M12 10V14M12 18H12.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const ErrorIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="10" fill="#E53935" />
+    <path d="M15 9L9 15M9 9L15 15" stroke="white" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const PriceAlertIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="10" fill="#0052FF" />
+    <path d="M12 6V18M8 10L12 6L16 10M8 14L12 18L16 14" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const TransactionIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="10" fill="#00D395" />
+    <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// Helper to get icon for notification type
+const getNotificationIcon = (type: string) => {
+  switch (type) {
+    case 'success':
+      return <SuccessIcon />;
+    case 'warning':
+      return <WarningIcon />;
+    case 'error':
+      return <ErrorIcon />;
+    case 'price_alert':
+      return <PriceAlertIcon />;
+    case 'transaction':
+      return <TransactionIcon />;
+    default:
+      return <InfoIcon />;
+  }
+};
+
+// Helper to format timestamp
+const formatTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+};
+
+// Chevron Right for notification tabs
+const ChevronRightSmall = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <path d="M9 18L15 12L9 6" stroke="#5B616E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 // Helper function to extract display name from email
 const getDisplayNameFromEmail = (email: string): string => {
   const localPart = email.split('@')[0];
@@ -111,17 +374,28 @@ interface TopNavbarProps {
 export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
   const router = useRouter();
   const { user, logout } = useUser();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification } = useNotifications();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [gridMenuOpen, setGridMenuOpen] = useState(false);
+  const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const gridMenuRef = useRef<HTMLDivElement>(null);
+  const notificationMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu when clicking outside
+  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
+      }
+      if (gridMenuRef.current && !gridMenuRef.current.contains(event.target as Node)) {
+        setGridMenuOpen(false);
+      }
+      if (notificationMenuRef.current && !notificationMenuRef.current.contains(event.target as Node)) {
+        setNotificationMenuOpen(false);
       }
     };
 
@@ -159,66 +433,227 @@ export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
         {/* Right side - Icons and Avatar */}
         <HStack alignItems="center" gap={1}>
           {/* Search */}
-          <Box
-            borderRadius="800"
-            paddingX={3}
-            paddingY={1}
-            style={{
-              backgroundColor: '#F0F2F5',
-              width: searchFocused ? 450 : 375,
-              transition: 'all 0.2s ease-in-out',
-              border: searchFocused ? '2px solid #0052FF' : '2px solid transparent',
-              boxShadow: searchFocused ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none',
-            }}
-          >
-            <HStack alignItems="center" gap={2}>
-              <SearchIcon color={searchFocused ? '#0052FF' : '#8A919E'} />
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                style={{
-                  border: 'none',
-                  outline: 'none',
-                  backgroundColor: 'transparent',
-                  color: searchFocused ? '#000000ff' : '#8A919E',
-                  fontSize: '14px',
-                  width: '100%',
-                }}
-              />
-            </HStack>
-          </Box>
-          {/* Notification bell */}
-          <Box
-            as="button"
-            border="none"
-            cursor="pointer"
+          <label
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              gap: 8,
               backgroundColor: '#F0F2F5',
-              borderRadius: '50%',
-              width: 36,
-              height: 36,
+              borderRadius: '24px',
+              width: searchFocused ? 450 : 375,
+              padding: '8px 16px',
+              transition: 'all 0.2s ease-in-out',
+              border: searchFocused ? '2px solid #0052FF' : '2px solid transparent',
+              boxShadow: searchFocused ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none',
+              cursor: 'text',
             }}
           >
-            <BellIcon />
+            <SearchIcon color={searchFocused ? '#0052FF' : '#8A919E'} />
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              style={{
+                border: 'none',
+                outline: 'none',
+                backgroundColor: 'transparent',
+                color: searchFocused ? '#000000ff' : '#8A919E',
+                fontSize: '14px',
+                width: '100%',
+                flex: 1,
+              }}
+            />
+          </label>
+          {/* Notification bell */}
+          <Box style={{ position: 'relative' }} ref={notificationMenuRef}>
+            <Box
+              as="button"
+              onClick={() => setNotificationMenuOpen(!notificationMenuOpen)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#F0F2F5',
+                borderRadius: '50%',
+                width: 36,
+                height: 36,
+                border: 'none',
+                cursor: 'pointer',
+                position: 'relative',
+              }}
+            >
+              <BellIcon />
+              {/* Unread blue dot */}
+              {unreadCount > 0 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    backgroundColor: '#0052FF',
+                    borderRadius: '50%',
+                    width: 10,
+                    height: 10,
+                  }}
+                />
+              )}
+            </Box>
+
+            {/* Notification Dropdown */}
+            {notificationMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: 8,
+                  width: 380,
+                  maxHeight: 500,
+                  backgroundColor: 'white',
+                  borderRadius: 16,
+                  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.15)',
+                  zIndex: 1000,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px 12px' }}>
+                  <Text font="title4">Notifications</Text>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={markAllAsRead}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '4px 8px',
+                          borderRadius: 8,
+                        }}
+                      >
+                        <Text font="caption" style={{ color: '#0052FF' }}>Mark all read</Text>
+                      </button>
+                    )}
+                    <button
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 4,
+                        borderRadius: 8,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <img src={settingImg.src} alt="Settings" width={20} height={20} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Notifications List or Empty State */}
+                {notifications.length === 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 20px 40px', gap: 8 }}>
+                    <img src={notificationsImg.src} alt="Notifications" width={120} height={120} />
+                    <Text font="title4" style={{ marginTop: 8 }}>All caught up!</Text>
+                    <Text font="body" color="fgMuted" style={{ textAlign: 'center', maxWidth: 280 }}>
+                      You've read all updates in this category. Feel free to explore other topics or check back later for fresh insights. Stay tuned!
+                    </Text>
+                  </div>
+                ) : (
+                  <div style={{ overflowY: 'auto', flex: 1 }}>
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        onClick={() => markAsRead(notification.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 12,
+                          padding: '12px 20px',
+                          backgroundColor: notification.read ? 'transparent' : 'rgba(0, 82, 255, 0.05)',
+                          cursor: 'pointer',
+                          borderBottom: '1px solid #E8EAED',
+                          transition: 'background-color 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = notification.read ? '#F5F5F5' : 'rgba(0, 82, 255, 0.08)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = notification.read ? 'transparent' : 'rgba(0, 82, 255, 0.05)';
+                        }}
+                      >
+                        {/* Icon */}
+                        <div style={{ flexShrink: 0, marginTop: 2 }}>
+                          {getNotificationIcon(notification.type)}
+                        </div>
+
+                        {/* Content */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                            <Text font="body" style={{ fontWeight: notification.read ? 400 : 600 }}>
+                              {notification.title}
+                            </Text>
+                            <Text font="caption" color="fgMuted" style={{ flexShrink: 0 }}>
+                              {formatTimestamp(notification.timestamp)}
+                            </Text>
+                          </div>
+                          <Text font="caption" color="fgMuted" style={{ marginTop: 2 }}>
+                            {notification.message}
+                          </Text>
+                        </div>
+
+                        {/* Close button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeNotification(notification.id);
+                          }}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 4,
+                            borderRadius: 4,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            opacity: 0.5,
+                            flexShrink: 0,
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity = '1';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.opacity = '0.5';
+                          }}
+                        >
+                          <CloseIcon />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </Box>
 
           {/* Help */}
           <Box
             as="button"
-            border="none"
-            cursor="pointer"
+            onClick={() => console.log('agent clicked help')}
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: '#F0F2F5',
+              border: 'none',
+              cursor: 'pointer',
               borderRadius: '50%',
               width: 36,
               height: 36,
@@ -228,34 +663,136 @@ export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
           </Box>
 
           {/* Grid/Apps */}
-          <Box
-            as="button"
-            border="none"
-            cursor="pointer"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#F0F2F5',
-              borderRadius: '50%',
-              width: 36,
-              height: 36,
-            }}
-          >
-            <GridIcon />
+          <Box style={{ position: 'relative' }} ref={gridMenuRef}>
+            <Box
+              as="button"
+              onClick={() => setGridMenuOpen(!gridMenuOpen)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#F0F2F5',
+                borderRadius: '50%',
+                width: 36,
+                height: 36,
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <GridIcon />
+            </Box>
+
+            {/* Grid Menu Dropdown */}
+            {gridMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: 8,
+                  width: 320,
+                  maxHeight: '80vh',
+                  overflowY: 'auto',
+                  backgroundColor: 'white',
+                  borderRadius: 16,
+                  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.15)',
+                  zIndex: 1000,
+                  padding: '16px 8px',
+                }}
+              >
+                {/* FOR INDIVIDUALS */}
+                <VStack gap={1} style={{ paddingBottom: 16 }}>
+                  <Box paddingX={2} paddingBottom={1}>
+                    <Text font="legal" color="fgMuted" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                      For Individuals
+                    </Text>
+                  </Box>
+                  <HStack gap={0} style={{ flexWrap: 'wrap' }}>
+                    <GridMenuItem icon={<CoinbaseMenuIcon />} label="Coinbase" />
+                    <GridMenuItem icon={<AdvancedMenuIcon />} label="Advanced" />
+                    <GridMenuItem icon={<BaseAppMenuIcon />} label="Base App" />
+                  </HStack>
+                </VStack>
+
+                {/* Divider */}
+                <Box style={{ height: 1, backgroundColor: '#E8EAED', marginBottom: 16 }} />
+
+                {/* FOR BUSINESSES */}
+                <VStack gap={1} style={{ paddingBottom: 16 }}>
+                  <Box paddingX={2} paddingBottom={1}>
+                    <Text font="legal" color="fgMuted" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                      For Businesses
+                    </Text>
+                  </Box>
+                  <HStack gap={0} style={{ flexWrap: 'wrap' }}>
+                    <GridMenuItem icon={<BusinessMenuIcon />} label="Business" />
+                  </HStack>
+                </VStack>
+
+                {/* Divider */}
+                <Box style={{ height: 1, backgroundColor: '#E8EAED', marginBottom: 16 }} />
+
+                {/* FOR INSTITUTIONS */}
+                <VStack gap={1} style={{ paddingBottom: 16 }}>
+                  <Box paddingX={2} paddingBottom={1}>
+                    <Text font="legal" color="fgMuted" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                      For Institutions
+                    </Text>
+                  </Box>
+                  <HStack gap={0} style={{ flexWrap: 'wrap' }}>
+                    <GridMenuItem icon={<PrimeMenuIcon />} label="Prime" />
+                    <GridMenuItem icon={<ExchangeMenuIcon />} label="Exchange" />
+                    <GridMenuItem icon={<DerivativesMenuIcon />} label="Derivatives" />
+                  </HStack>
+                </VStack>
+
+                {/* Divider */}
+                <Box style={{ height: 1, backgroundColor: '#E8EAED', marginBottom: 16 }} />
+
+                {/* FOR DEVELOPERS */}
+                <VStack gap={1} style={{ paddingBottom: 16 }}>
+                  <Box paddingX={2} paddingBottom={1}>
+                    <Text font="legal" color="fgMuted" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                      For Developers
+                    </Text>
+                  </Box>
+                  <HStack gap={0} style={{ flexWrap: 'wrap' }}>
+                    <GridMenuItem icon={<DevPlatformMenuIcon />} label="Dev Platform" />
+                    <GridMenuItem icon={<DevDocsMenuIcon />} label="Dev Docs" />
+                    <GridMenuItem icon={<BaseBuildMenuIcon />} label="Base Build" />
+                  </HStack>
+                </VStack>
+
+                {/* Divider */}
+                <Box style={{ height: 1, backgroundColor: '#E8EAED', marginBottom: 16 }} />
+
+                {/* MORE */}
+                <VStack gap={1}>
+                  <Box paddingX={2} paddingBottom={1}>
+                    <Text font="legal" color="fgMuted" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                      More
+                    </Text>
+                  </Box>
+                  <HStack gap={0} style={{ flexWrap: 'wrap' }}>
+                    <GridMenuItem icon={<HelpMenuIcon />} label="Help" />
+                    <GridMenuItem icon={<AccountMenuIcon />} label="Account" />
+                  </HStack>
+                </VStack>
+              </div>
+            )}
           </Box>
 
           {/* User Avatar with Dropdown */}
           <Box style={{ position: 'relative' }} ref={menuRef}>
             <Box
               as="button"
-              border="none"
-              cursor="pointer"
               onClick={() => setMenuOpen(!menuOpen)}
               style={{
                 backgroundColor: 'transparent',
                 marginLeft: 8,
                 padding: 0,
+                border: 'none',
+                cursor: 'pointer',
               }}
             >
               <img
