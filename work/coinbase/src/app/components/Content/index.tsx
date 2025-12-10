@@ -22,3 +22,5 @@ export const MainContent = ({ activeSection }: MainContentProps) => {
 };
 
 export { HomeContent, TradeContent, CreditCardContent, CoinbaseOneContent, TransactionsContent };
+export { ContentTemplate } from './ContentTemplate';
+export type { ContentTemplateProps } from './ContentTemplate';

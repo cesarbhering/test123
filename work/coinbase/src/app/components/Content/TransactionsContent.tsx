@@ -1,10 +1,13 @@
 'use client';
-import { Box } from '@coinbase/cds-web/layout';
+import { ContentTemplate } from './ContentTemplate';
 
 export const TransactionsContent = () => {
   return (
-    <Box padding={4} style={{ flexGrow: 1 }}>
+    <ContentTemplate
+      title="Transactions EMPTY"
+      subtitle="View your transaction history"
+    >
       {/* Transactions content goes here */}
-    </Box>
+    </ContentTemplate>
   );
 };
