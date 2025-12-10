@@ -9,6 +9,7 @@ import { Text, Link } from '@coinbase/cds-web/typography';
 import { TextInput } from '@coinbase/cds-web/controls';
 import { Button } from '@coinbase/cds-web/buttons';
 import { LogoMark } from '@coinbase/cds-web/icons';
+import { useUser } from '../context/UserContext';
 
 // Custom SVG icons for social login
 const PasskeyIcon = () => (
@@ -54,6 +55,7 @@ const SocialButton = ({ icon, children }: { icon: React.ReactNode; children: Rea
 
 const LoginPage = () => {
   const router = useRouter();
+  const { setUser } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -103,6 +105,8 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok) {
+        // Store user data in context
+        setUser(data.user);
         // Success - navigate to /home
         router.push('/home');
       } else {
