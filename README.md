@@ -1,27 +1,25 @@
 # Coinbase Clone
 
-A simplified Coinbase clone built with Next.js, Prisma, and SQLite.
+A simplified Coinbase clone built with Next.js and localStorage.
 
 ## Setup
 
 ```bash
+# Navigate to project directory
+cd work/coinbase
+
 # Install dependencies
 npm install
 
-# Generate Prisma client
-npx prisma generate
-
-# Run database migrations
-npx prisma migrate dev
-
-# Seed database with test data
-npm run db:seed
-
-# Run
+# Run development server
 npm run dev
 ```
-### Usage
+
+## Usage
+
 Application runs at: http://localhost:3000
+
+The database is automatically initialized with seed data on first load using localStorage.
 
 ## Test Login
 
@@ -34,15 +32,12 @@ Application runs at: http://localhost:3000
 - `/signin` - Sign in page
 - `/home` - Dashboard (after login)
 
-## Database Commands
+## Storage
 
-```bash
-# View database in GUI
-npx prisma studio
+Data is stored in browser localStorage using a custom storage abstraction layer at `src/lib/storage.ts`.
 
-# Reset database (deletes all data)
-npx prisma migrate reset
-
-# Re-seed database
-npm run db:seed
+To reset data, clear your browser's localStorage or use:
+```javascript
+// In browser console
+localStorage.clear()
 ```
