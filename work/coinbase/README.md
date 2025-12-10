@@ -1,6 +1,6 @@
 # Coinbase Clone
 
-A simplified Coinbase clone built with Next.js, Prisma, and SQLite.
+A simplified Coinbase clone built with React, Next.js, Prisma, and SQLite.
 
 ## Setup
 
