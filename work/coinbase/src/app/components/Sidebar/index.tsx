@@ -203,8 +203,6 @@ const MenuItem = ({ icon, label, onClick }: MenuItemProps) => {
       onClick={onClick}
       background="transparent"
       width="100%"
-      border="none"
-      cursor="pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
@@ -212,6 +210,8 @@ const MenuItem = ({ icon, label, onClick }: MenuItemProps) => {
         backgroundColor: isHovered ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
         borderRadius: '8px',
         transition: 'background-color 0.15s ease',
+        border: 'none',
+        cursor: 'pointer',
       }}
     >
       <HStack alignItems="center" gap={2} paddingX={2} paddingY={1.5}>
@@ -237,7 +237,7 @@ const MenuSection = ({ title, children }: { title: string; children: React.React
 
 interface SeeAllMenuProps {
   onClose: () => void;
-  menuRef: React.RefObject<HTMLDivElement>;
+  menuRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const SeeAllMenu = ({ onClose, menuRef }: SeeAllMenuProps) => (
@@ -265,9 +265,7 @@ const SeeAllMenu = ({ onClose, menuRef }: SeeAllMenuProps) => (
       as="button"
       onClick={onClose}
       background="transparent"
-      border="none"
-      cursor="pointer"
-      style={{ position: 'absolute', top: 16, right: 16 }}
+      style={{ position: 'absolute', top: 16, right: 16, border: 'none', cursor: 'pointer' }}
     >
       <CloseIcon />
     </Box>
@@ -319,9 +317,6 @@ const NavItem = ({ Icon, label, active, onClick }: NavItemProps) => {
       onClick={onClick}
       background="transparent"
       width="100%"
-      borderRadius="md"
-      border="none"
-      cursor="pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
@@ -329,6 +324,8 @@ const NavItem = ({ Icon, label, active, onClick }: NavItemProps) => {
         backgroundColor: getBackgroundColor(),
         borderRadius: '80px',
         transition: 'background-color 0.15s ease',
+        border: 'none',
+        cursor: 'pointer',
       }}
     >
       <HStack alignItems="center" gap={2} paddingX={3} paddingY={2}>
@@ -393,7 +390,7 @@ export const Sidebar = ({ activeItem, onActiveItemChange }: SidebarProps) => {
       {/* See All Menu */}
       {seeAllOpen && <SeeAllMenu onClose={() => setSeeAllOpen(false)} menuRef={menuRef} />}
       {/* Logo */}
-      <Box paddingX={3} paddingY={2} marginBottom={2}>
+      <Box paddingX={3} paddingY={2} style={{ marginBottom: '16px' }}>
         <CoinbaseLogo />
       </Box>
 
