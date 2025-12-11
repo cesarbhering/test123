@@ -7,10 +7,13 @@ import { MediaQueryProvider } from '@coinbase/cds-web/system';
 import { Sidebar } from '../components/Sidebar';
 import { TopNavbar } from '../components/TopNavbar';
 import { MainContent } from '../components/Content';
+import { CryptoDetailView } from '../components/Content/CryptoDetailView';
+import { CryptoAsset } from '../components/Content/TradeContent';
 
 export default function HomePage() {
   const [activeItem, setActiveItem] = useState('home');
   const [pageTitle, setPageTitle] = useState('Home');
+  const [selectedCryptoAsset, setSelectedCryptoAsset] = useState<CryptoAsset | null>(null);
 
   useEffect(() => {
     document.title = `Coinbase - ${pageTitle} | Alignerr`;
@@ -19,6 +22,34 @@ export default function HomePage() {
   const handleActiveItemChange = (id: string, label: string) => {
     setActiveItem(id);
     setPageTitle(label);
+    setSelectedCryptoAsset(null); // Clear selected asset when changing sections
+  };
+
+  const handleSelectCryptoAsset = (asset: CryptoAsset) => {
+    setSelectedCryptoAsset(asset);
+    setPageTitle(asset.symbol);
+  };
+
+  const handleCloseCryptoDetail = () => {
+    setSelectedCryptoAsset(null);
+    // Restore previous title based on active item
+    const titleMap: Record<string, string> = {
+      home: 'Home',
+      trade: 'Trade',
+      'credit-card': 'Credit Card',
+      'coinbase-one': 'Coinbase One',
+      transactions: 'Transactions',
+    };
+    setPageTitle(titleMap[activeItem] || 'Home');
+  };
+
+  const handleToggleFavorite = (id: string) => {
+    if (selectedCryptoAsset && selectedCryptoAsset.id === id) {
+      setSelectedCryptoAsset({
+        ...selectedCryptoAsset,
+        isFavorite: !selectedCryptoAsset.isFavorite,
+      });
+    }
   };
 
   return (
@@ -47,12 +78,21 @@ export default function HomePage() {
           >
             {/* Top Navbar - fixed at top */}
             <div style={{ flexShrink: 0 }}>
-              <TopNavbar title={pageTitle} />
+              <TopNavbar title={pageTitle} onSelectCryptoAsset={handleSelectCryptoAsset} />
             </div>
 
             {/* Content Area - scrollable */}
             <div style={{ flex: 1, overflow: 'auto' }}>
-              <MainContent activeSection={activeItem} />
+              {selectedCryptoAsset ? (
+                <CryptoDetailView
+                  asset={selectedCryptoAsset}
+                  onClose={handleCloseCryptoDetail}
+                  onToggleFavorite={handleToggleFavorite}
+                  onSelectAsset={handleSelectCryptoAsset}
+                />
+              ) : (
+                <MainContent activeSection={activeItem} />
+              )}
             </div>
           </Box>
         </Box>

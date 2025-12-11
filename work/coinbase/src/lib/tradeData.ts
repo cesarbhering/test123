@@ -1,6 +1,189 @@
 import { CryptoAsset } from '../app/components/Content/TradeContent';
 
 const STORAGE_KEY = 'coinbase_trade_data';
+const SEARCH_DATA_STORAGE_KEY = 'coinbase_search_crypto_data';
+
+// Extended crypto data for search dropdown
+export interface SearchCryptoAsset {
+  id: string;
+  name: string;
+  symbol: string;
+  rank: number;
+  price: number;
+  marketCap: string;
+  volume: string;
+  change24h: number;
+  apy?: number; // Optional staking APY
+  category: 'crypto' | 'futures' | 'perpetuals';
+}
+
+// Default search crypto data matching the screenshot
+const defaultSearchCryptoData: SearchCryptoAsset[] = [
+  {
+    id: 'bitcoin',
+    name: 'Bitcoin',
+    symbol: 'BTC',
+    rank: 1,
+    price: 90386.42,
+    marketCap: '$1.8T',
+    volume: '$65.8B',
+    change24h: -1.60,
+    category: 'crypto',
+  },
+  {
+    id: 'ethereum',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    rank: 2,
+    price: 3238.32,
+    marketCap: '$392.6B',
+    volume: '$31.6B',
+    change24h: -1.54,
+    apy: 1.80,
+    category: 'crypto',
+  },
+  {
+    id: 'tether',
+    name: 'Tether',
+    symbol: 'USDT',
+    rank: 3,
+    price: 1.00,
+    marketCap: '$186.1B',
+    volume: '$106.9B',
+    change24h: 0.00,
+    category: 'crypto',
+  },
+  {
+    id: 'solana',
+    name: 'Solana',
+    symbol: 'SOL',
+    rank: 4,
+    price: 198.45,
+    marketCap: '$92.3B',
+    volume: '$4.2B',
+    change24h: 5.67,
+    category: 'crypto',
+  },
+  {
+    id: 'xrp',
+    name: 'XRP',
+    symbol: 'XRP',
+    rank: 5,
+    price: 2.20,
+    marketCap: '$125.4B',
+    volume: '$12.1B',
+    change24h: 3.45,
+    category: 'crypto',
+  },
+  {
+    id: 'bnb',
+    name: 'BNB',
+    symbol: 'BNB',
+    rank: 6,
+    price: 645.30,
+    marketCap: '$94.2B',
+    volume: '$2.1B',
+    change24h: -0.82,
+    category: 'crypto',
+  },
+  {
+    id: 'dogecoin',
+    name: 'Dogecoin',
+    symbol: 'DOGE',
+    rank: 7,
+    price: 0.35,
+    marketCap: '$52.1B',
+    volume: '$3.8B',
+    change24h: 2.15,
+    category: 'crypto',
+  },
+  {
+    id: 'cardano',
+    name: 'Cardano',
+    symbol: 'ADA',
+    rank: 8,
+    price: 0.95,
+    marketCap: '$33.8B',
+    volume: '$1.2B',
+    change24h: -2.34,
+    category: 'crypto',
+  },
+  // Futures
+  {
+    id: 'btc-futures',
+    name: 'Bitcoin Futures',
+    symbol: 'BTC-PERP',
+    rank: 1,
+    price: 90450.00,
+    marketCap: '$850M',
+    volume: '$25.2B',
+    change24h: -1.55,
+    category: 'futures',
+  },
+  {
+    id: 'eth-futures',
+    name: 'Ethereum Futures',
+    symbol: 'ETH-PERP',
+    rank: 2,
+    price: 3242.50,
+    marketCap: '$420M',
+    volume: '$12.8B',
+    change24h: -1.48,
+    category: 'futures',
+  },
+  // Perpetuals
+  {
+    id: 'btc-perp',
+    name: 'Bitcoin Perpetual',
+    symbol: 'BTC-USD',
+    rank: 1,
+    price: 90400.00,
+    marketCap: '$1.2B',
+    volume: '$45.6B',
+    change24h: -1.58,
+    category: 'perpetuals',
+  },
+  {
+    id: 'eth-perp',
+    name: 'Ethereum Perpetual',
+    symbol: 'ETH-USD',
+    rank: 2,
+    price: 3240.00,
+    marketCap: '$680M',
+    volume: '$22.3B',
+    change24h: -1.50,
+    category: 'perpetuals',
+  },
+];
+
+// Search data storage functions
+export function initializeSearchData(): void {
+  if (typeof window === 'undefined') return;
+
+  const existing = localStorage.getItem(SEARCH_DATA_STORAGE_KEY);
+  if (!existing) {
+    localStorage.setItem(SEARCH_DATA_STORAGE_KEY, JSON.stringify(defaultSearchCryptoData));
+  }
+}
+
+export function getSearchData(): SearchCryptoAsset[] {
+  if (typeof window === 'undefined') return [];
+
+  const stored = localStorage.getItem(SEARCH_DATA_STORAGE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return defaultSearchCryptoData;
+    }
+  }
+  return defaultSearchCryptoData;
+}
+
+export function saveSearchData(data: SearchCryptoAsset[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(SEARCH_DATA_STORAGE_KEY, JSON.stringify(data));
+}
 
 // Default crypto data to seed localStorage
 const defaultCryptoData: CryptoAsset[] = [

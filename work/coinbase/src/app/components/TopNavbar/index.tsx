@@ -8,6 +8,8 @@ import notificationsImg from '../../assets/notifications.svg';
 import settingImg from '../../assets/setting.png';
 import { useUser } from '../../context/UserContext';
 import { useNotifications, Notification } from '../../context/NotificationContext';
+import { initializeSearchData, getSearchData, SearchCryptoAsset } from '../../../lib/tradeData';
+import { CryptoAsset } from '../Content/TradeContent';
 
 const SearchIcon = ({ color = '#8A919E' }: { color?: string }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -367,11 +369,58 @@ const getInitials = (name: string): string => {
   return name.substring(0, 2).toUpperCase();
 };
 
+// Crypto Icon colors mapping
+const getCryptoIconColor = (symbol: string): string => {
+  const colors: Record<string, string> = {
+    BTC: '#F7931A',
+    ETH: '#627EEA',
+    USDT: '#26A17B',
+    SOL: '#00FFA3',
+    XRP: '#23292F',
+    BNB: '#F3BA2F',
+    DOGE: '#C2A633',
+    ADA: '#0033AD',
+    'BTC-PERP': '#F7931A',
+    'ETH-PERP': '#627EEA',
+    'BTC-USD': '#F7931A',
+    'ETH-USD': '#627EEA',
+  };
+  return colors[symbol] || '#0052FF';
+};
+
+// Crypto Icon component for search dropdown
+const SearchCryptoIcon = ({ symbol }: { symbol: string }) => {
+  const color = getCryptoIconColor(symbol);
+  return (
+    <div
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: '50%',
+        backgroundColor: color,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontSize: 14,
+        fontWeight: 600,
+        flexShrink: 0,
+      }}
+    >
+      {symbol.slice(0, 2).toUpperCase()}
+    </div>
+  );
+};
+
+// Search Tab type
+type SearchTab = 'top' | 'crypto' | 'futures' | 'perpetuals';
+
 interface TopNavbarProps {
   title?: string;
+  onSelectCryptoAsset?: (asset: CryptoAsset) => void;
 }
 
-export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
+export const TopNavbar = ({ title = 'Home', onSelectCryptoAsset }: TopNavbarProps) => {
   const router = useRouter();
   const { user, logout } = useUser();
   const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification } = useNotifications();
@@ -381,9 +430,18 @@ export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
   const [gridMenuOpen, setGridMenuOpen] = useState(false);
   const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [searchTab, setSearchTab] = useState<SearchTab>('top');
+  const [searchData, setSearchData] = useState<SearchCryptoAsset[]>([]);
   const menuRef = useRef<HTMLDivElement>(null);
   const gridMenuRef = useRef<HTMLDivElement>(null);
   const notificationMenuRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Initialize search data on mount
+  useEffect(() => {
+    initializeSearchData();
+    setSearchData(getSearchData());
+  }, []);
 
   // Close menus when clicking outside
   useEffect(() => {
@@ -397,11 +455,55 @@ export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
       if (notificationMenuRef.current && !notificationMenuRef.current.contains(event.target as Node)) {
         setNotificationMenuOpen(false);
       }
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setSearchFocused(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Filter search data based on tab and search value
+  const getFilteredSearchData = (): SearchCryptoAsset[] => {
+    let filtered = [...searchData];
+
+    // Filter by category based on tab
+    if (searchTab === 'crypto') {
+      filtered = filtered.filter(asset => asset.category === 'crypto');
+    } else if (searchTab === 'futures') {
+      filtered = filtered.filter(asset => asset.category === 'futures');
+    } else if (searchTab === 'perpetuals') {
+      filtered = filtered.filter(asset => asset.category === 'perpetuals');
+    }
+    // 'top' shows all but sorted by rank within crypto category primarily
+
+    // Filter by search value
+    if (searchValue.trim()) {
+      const query = searchValue.toLowerCase();
+      filtered = filtered.filter(
+        asset =>
+          asset.name.toLowerCase().includes(query) ||
+          asset.symbol.toLowerCase().includes(query)
+      );
+    }
+
+    // Sort by rank
+    filtered.sort((a, b) => a.rank - b.rank);
+
+    return filtered;
+  };
+
+  // Format price for display
+  const formatSearchPrice = (price: number): string => {
+    if (price >= 1000) {
+      return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    if (price >= 1) {
+      return `$${price.toFixed(2)}`;
+    }
+    return `$${price.toFixed(4)}`;
+  };
 
   const displayName = user?.name || (user?.email ? getDisplayNameFromEmail(user.email) : 'User');
   const userEmail = user?.email || '';
@@ -432,41 +534,197 @@ export const TopNavbar = ({ title = 'Home' }: TopNavbarProps) => {
 
         {/* Right side - Icons and Avatar */}
         <HStack alignItems="center" gap={1}>
-          {/* Search */}
-          <label
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              backgroundColor: '#F0F2F5',
-              borderRadius: '24px',
-              width: searchFocused ? 450 : 375,
-              padding: '8px 16px',
-              transition: 'all 0.2s ease-in-out',
-              border: searchFocused ? '2px solid #0052FF' : '2px solid transparent',
-              boxShadow: searchFocused ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none',
-              cursor: 'text',
-            }}
-          >
-            <SearchIcon color={searchFocused ? '#0052FF' : '#8A919E'} />
-            <input
-              type="text"
-              placeholder="Search"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
+          {/* Search with Dropdown */}
+          <div ref={searchRef} style={{ position: 'relative' }}>
+            <label
               style={{
-                border: 'none',
-                outline: 'none',
-                backgroundColor: 'transparent',
-                color: searchFocused ? '#000000ff' : '#8A919E',
-                fontSize: '14px',
-                width: '100%',
-                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                backgroundColor: '#F0F2F5',
+                borderRadius: searchFocused ? '12px 12px 0 0' : '24px',
+                width: searchFocused ? 500 : 375,
+                padding: '8px 16px',
+                transition: 'all 0.2s ease-in-out',
+                border: searchFocused ? '2px solid #0052FF' : '2px solid transparent',
+                borderBottom: searchFocused ? '1px solid #E8EAED' : '2px solid transparent',
+                boxShadow: searchFocused ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none',
+                cursor: 'text',
               }}
-            />
-          </label>
+            >
+              <SearchIcon color={searchFocused ? '#0052FF' : '#8A919E'} />
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                style={{
+                  border: 'none',
+                  outline: 'none',
+                  backgroundColor: 'transparent',
+                  color: searchFocused ? '#000000ff' : '#8A919E',
+                  fontSize: '14px',
+                  width: '100%',
+                  flex: 1,
+                }}
+              />
+            </label>
+
+            {/* Search Dropdown */}
+            {searchFocused && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  width: 500,
+                  backgroundColor: 'white',
+                  borderRadius: '0 0 12px 12px',
+                  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.15)',
+                  zIndex: 1000,
+                  overflow: 'hidden',
+                  border: '2px solid #0052FF',
+                  borderTop: 'none',
+                }}
+              >
+                {/* Tabs */}
+                <div style={{ display: 'flex', gap: 8, padding: '16px 20px', borderBottom: '1px solid #E8EAED' }}>
+                  <button
+                    onClick={() => setSearchTab('top')}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: searchTab === 'top' ? '#0A0B0D' : 'transparent',
+                      border: 'none',
+                      borderRadius: 20,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Text font="body" style={{ color: searchTab === 'top' ? 'white' : '#5B616E', fontWeight: 500 }}>Top</Text>
+                  </button>
+                  <button
+                    onClick={() => setSearchTab('crypto')}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: searchTab === 'crypto' ? '#0A0B0D' : 'transparent',
+                      border: 'none',
+                      borderRadius: 20,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Text font="body" style={{ color: searchTab === 'crypto' ? 'white' : '#5B616E', fontWeight: 500 }}>Crypto</Text>
+                  </button>
+                  <button
+                    onClick={() => setSearchTab('futures')}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: searchTab === 'futures' ? '#0A0B0D' : 'transparent',
+                      border: 'none',
+                      borderRadius: 20,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Text font="body" style={{ color: searchTab === 'futures' ? 'white' : '#5B616E', fontWeight: 500 }}>Futures</Text>
+                  </button>
+                  <button
+                    onClick={() => setSearchTab('perpetuals')}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: searchTab === 'perpetuals' ? '#0A0B0D' : 'transparent',
+                      border: 'none',
+                      borderRadius: 20,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Text font="body" style={{ color: searchTab === 'perpetuals' ? 'white' : '#5B616E', fontWeight: 500 }}>Perpetuals</Text>
+                  </button>
+                </div>
+
+                {/* Category Label */}
+                <div style={{ padding: '16px 20px 8px' }}>
+                  <Text font="caption" color="fgMuted" style={{ textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 11 }}>
+                    {searchTab === 'top' ? 'CRYPTO' : searchTab.toUpperCase()}
+                  </Text>
+                </div>
+
+                {/* Crypto List */}
+                <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+                  {getFilteredSearchData().length === 0 ? (
+                    <div style={{ padding: '20px', textAlign: 'center' }}>
+                      <Text font="body" color="fgMuted">No results found</Text>
+                    </div>
+                  ) : (
+                    getFilteredSearchData().map((asset) => (
+                      <div
+                        key={asset.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '14px 20px',
+                          cursor: 'pointer',
+                          transition: 'background-color 0.15s',
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5F5F5'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        onClick={() => {
+                          setSearchFocused(false);
+                          setSearchValue('');
+                          // Convert SearchCryptoAsset to CryptoAsset and navigate
+                          if (onSelectCryptoAsset) {
+                            const cryptoAsset: CryptoAsset = {
+                              id: asset.id,
+                              name: asset.name,
+                              symbol: asset.symbol,
+                              iconUrl: '',
+                              marketPrice: asset.price,
+                              trades: 0,
+                              marketCap: asset.marketCap,
+                              change24h: asset.change24h,
+                              isFavorite: false,
+                            };
+                            onSelectCryptoAsset(cryptoAsset);
+                          }
+                        }}
+                      >
+                        {/* Icon */}
+                        <SearchCryptoIcon symbol={asset.symbol} />
+
+                        {/* Name and Symbol */}
+                        <div style={{ marginLeft: 12, flex: 1, minWidth: 120 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <Text font="body" style={{ fontWeight: 500 }}>{asset.name}</Text>
+                            <Text font="caption" color="fgMuted">#{asset.rank}</Text>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <Text font="caption" color="fgMuted">{asset.symbol}</Text>
+                            {asset.apy && (
+                              <Text font="caption" style={{ color: '#0052FF' }}>{asset.apy}% APY</Text>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Market Cap and Volume */}
+                        <div style={{ textAlign: 'left', marginRight: 32, minWidth: 100 }}>
+                          <Text font="caption" color="fgMuted">{asset.marketCap} mcap</Text>
+                          <br />
+                          <Text font="caption" color="fgMuted">{asset.volume} vol</Text>
+                        </div>
+
+                        {/* Price and Change */}
+                        <div style={{ textAlign: 'right', minWidth: 100 }}>
+                          <Text font="body" style={{ fontWeight: 500 }}>{formatSearchPrice(asset.price)}</Text>
+                          <br />
+                          <Text font="caption" style={{ color: asset.change24h >= 0 ? '#00D395' : '#E53935' }}>
+                            {asset.change24h >= 0 ? '' : ''} {Math.abs(asset.change24h).toFixed(2)}%
+                          </Text>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
           {/* Notification bell */}
           <Box style={{ position: 'relative' }} ref={notificationMenuRef}>
             <Box
