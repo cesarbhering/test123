@@ -1,9 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { ThemeProvider } from '@coinbase/cds-web';
-import { defaultTheme } from '@coinbase/cds-web/themes/defaultTheme';
 import { Box, VStack, HStack } from '@coinbase/cds-web/layout';
-import { MediaQueryProvider } from '@coinbase/cds-web/system';
 import { Text, Link } from '@coinbase/cds-web/typography';
 import { TextInput } from '@coinbase/cds-web/controls';
 import { Button } from '@coinbase/cds-web/buttons';
@@ -11,7 +8,6 @@ import { LogoMark } from '@coinbase/cds-web/icons';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import heroImage from './assets/hero-image.avif';
-import { fontWeight } from '@coinbase/cds-web/styles/responsive/base';
 
 // Navigation items
 const navItems = [
@@ -35,9 +31,7 @@ const LandingPage = () => {
   const [email, setEmail] = useState('');
 
   return (
-    <MediaQueryProvider>
-      <ThemeProvider theme={defaultTheme} activeColorScheme="light">
-        <VStack width="100%" minHeight="100vh" background="bg" gap={0}>
+    <VStack width="100%" minHeight="100vh" background="bg" gap={0}>
           {/* Promo Banner */}
           <Box
             width="100%"
@@ -197,8 +191,6 @@ const LandingPage = () => {
             </HStack>
           </Box>
         </VStack>
-      </ThemeProvider>
-    </MediaQueryProvider>
   );
 };
 
