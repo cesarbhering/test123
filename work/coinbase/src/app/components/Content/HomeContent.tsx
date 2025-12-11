@@ -105,7 +105,7 @@ export const HomeContent = () => {
             </HStack>
 
             <HStack gap={4} alignItems="center">
-              <Box flex={1} height="8px" style={{ borderRadius: '4px', background: '#F0F2F5', overflow: 'hidden' }}>
+              <Box height="8px" style={{ flex: 1, borderRadius: '4px', background: '#F0F2F5', overflow: 'hidden' }}>
                 <Box width="75%" height="100%" style={{ background: '#0052FF', borderRadius: '4px' }} />
               </Box>
               <Text font="label2" color="fgMuted" style={{ whiteSpace: 'nowrap' }}>1 step remaining</Text>
