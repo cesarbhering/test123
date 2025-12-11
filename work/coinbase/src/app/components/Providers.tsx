@@ -8,7 +8,7 @@ import { NotificationProvider } from '../context/NotificationContext';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={defaultTheme} activeColorScheme="light">
       <MediaQueryProvider>
         <UserProvider>
           <NotificationProvider>{children}</NotificationProvider>
