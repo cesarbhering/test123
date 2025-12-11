@@ -25,7 +25,7 @@ export const AssetSummary = ({ cryptoBalance, cashBalance }: AssetSummaryProps) 
         <HStack paddingY={4} gap={3} alignItems="center" justifyContent="space-between" width="100%" style={{ borderBottom: '1px solid #F0F2F5' }}>
           <HStack gap={3} alignItems="center">
             <Box width="40px" height="40px" style={{ borderRadius: '50%' }} background="bgAlternate" display="flex" alignItems="center" justifyContent="center">
-              <Icon name="currencies" size="m" />
+              <Icon name="coinsCrypto" size="m" />
             </Box>
             <Text font="headline" style={{ fontSize: '18px' }}>Crypto</Text>
           </HStack>
@@ -42,7 +42,7 @@ export const AssetSummary = ({ cryptoBalance, cashBalance }: AssetSummaryProps) 
         <HStack paddingY={4} gap={3} alignItems="center" justifyContent="space-between" width="100%">
           <HStack gap={3} alignItems="center">
             <Box width="40px" height="40px" style={{ borderRadius: '50%' }} background="bgAlternate" display="flex" alignItems="center" justifyContent="center">
-              <Icon name="cashUSD" size="m" />
+              <Icon name="moneyCardCoin" size="m" />
             </Box>
             <Text font="headline" style={{ fontSize: '18px' }}>Cash</Text>
           </HStack>
