@@ -67,7 +67,7 @@ const LandingPage = () => {
               alignItems="center"
             >
               {/* Logo and Nav Links - centered */}
-              <HStack alignItems="center" gap={5} flexGrow={1} justifyContent="spaceBetween" paddingX="10">
+              <HStack alignItems="center" gap={5} flexGrow={1} justifyContent="space-between" paddingX={10}>
                 <Box flexShrink={0}>
                   <LogoMark size={32} />
                 </Box>
@@ -86,7 +86,7 @@ const LandingPage = () => {
               </HStack>
 
               {/* Right side buttons - far right */}
-              <HStack alignItems="center" gap={2} flexShrink={0} paddingX="10">
+              <HStack alignItems="center" gap={2} flexShrink={0} paddingX={10}>
                 <Box
                   as="button"
                   padding={1.5}
@@ -100,11 +100,11 @@ const LandingPage = () => {
                   <GlobeIcon />
                 </Box>
                 <NextLink href="/signin">
-                  <Button variant="secondary" size="md" style={{ height: '44px' }}>
+                  <Button variant="secondary" style={{ height: '44px' }}>
                     Sign in
                   </Button>
                 </NextLink>
-                <Button variant="primary" size="md" style={{ height: '44px' }}>
+                <Button variant="primary" style={{ height: '44px' }}>
                   Sign up
                 </Button>
               </HStack>
@@ -115,7 +115,7 @@ const LandingPage = () => {
           <Box
             width="100%"
             maxWidth={1905}
-            marginX="auto"
+            style={{ marginLeft: 'auto', marginRight: 'auto' }}
             paddingX={6}
             paddingY={8}
           >
@@ -129,7 +129,7 @@ const LandingPage = () => {
               <Box
                 background="bgSecondary"
                 borderRadius={900}
-                padding={0.2}
+                padding={0.25}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
@@ -146,7 +146,7 @@ const LandingPage = () => {
 
               {/* Right side content */}
               <VStack
-                alignItems="flexStart"
+                alignItems="flex-start"
                 gap={3}
                 maxWidth={700}
               >
@@ -189,7 +189,7 @@ const LandingPage = () => {
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </Box>
-                  <Button variant="primary" size="lg">
+                  <Button variant="primary">
                     Sign up
                   </Button>
                 </HStack>
