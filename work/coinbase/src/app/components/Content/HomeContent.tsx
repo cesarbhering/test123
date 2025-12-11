@@ -14,8 +14,8 @@ import { ContentTemplate } from './ContentTemplate';
 
 export const HomeContent = () => {
   const { user } = useUser();
-  const [balances, setBalances] = useState([]);
-  const [coins, setCoins] = useState([]);
+  const [balances, setBalances] = useState<any[]>([]);
+  const [coins, setCoins] = useState<any[]>([]);
   const [totalBalance, setTotalBalance] = useState(0);
   const [cryptoBalance, setCryptoBalance] = useState(0);
   const [cashBalance, setCashBalance] = useState(0);
